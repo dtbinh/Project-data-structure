@@ -1,0 +1,11 @@
+public class Graph {
+	private Arc arc[][];
+	
+	public Graph() {
+		
+	}
+	
+	public Boolean insertArc(int _place1, int _place2, int _distance) {
+		
+	}
+}

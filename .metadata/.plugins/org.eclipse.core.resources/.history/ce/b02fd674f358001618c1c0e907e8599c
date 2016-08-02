@@ -1,0 +1,41 @@
+public class Graph {
+	static final int MAX_VERTEX = 20;
+	private Vertex vertex[];
+	private Arc arc[][];
+	
+	public Graph() {
+		
+	}
+	
+	private int searchIndex(String nameVertex) {
+		for (int i = 0; i < MAX_VERTEX; i++) {
+			if (vertex[i] != null) {
+				if (vertex[i].getName() == nameVertex) {
+					
+				}
+			}
+		}
+		
+		
+		
+		/*
+		 * 	for (int i = 0; i < MAX_NODOS; i++) {
+		if (vertices[i] != NULL)
+			if (vertices[i]->getElemento() == elemento)
+				return i;
+	}
+
+	return -1;
+		 */
+	}
+	
+	public void insertVertex(int id, String name) {
+		
+	}
+	
+	public Boolean insertArc(int place1, int place2, int distance) {
+		
+		
+		return true;
+	}
+}

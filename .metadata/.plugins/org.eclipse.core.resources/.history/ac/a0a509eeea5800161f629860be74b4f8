@@ -1,0 +1,7 @@
+public class Graph {
+	private Arc arc[][];
+	
+	public Graph() {
+		
+	}
+}

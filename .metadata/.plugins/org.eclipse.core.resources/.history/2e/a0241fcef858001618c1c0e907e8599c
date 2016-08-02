@@ -1,0 +1,29 @@
+
+public class Main {
+	private static Graph graph;
+	
+	public static void main (String [] args) {
+		graph = new Graph();
+		
+		System.out.println("Hello world!");		
+	}
+	
+	public static void printMenu() {
+		do {
+			try {
+				System.out.println("1. Insert vertex \n");
+				System.out.println("2. Insert arc \n");
+				System.out.println("3. Print graph \n");
+				System.out.println("4. Exit \n\n");
+				System.out.println("Option: ");
+
+				cin >> opt;
+				System.out.println("\n\n------------------\n");
+				execOpt(opt);
+			}
+			catch (exception e) {
+				cout << "Error: " << e.what();
+			}
+		} while (opt != 4);
+	}
+}

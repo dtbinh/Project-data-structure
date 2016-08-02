@@ -1,0 +1,75 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
+public class Main {
+	private static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+	private static Graph graph;
+	
+	public static void main (String [] args) {
+		graph = new Graph();
+		
+		System.out.println("Hello world!");		
+	}
+	
+	public static void printMenu() {
+		int option;
+		
+		do {
+			try {
+				System.out.println("1. Insert vertex \n");
+				System.out.println("2. Insert arc \n");
+				System.out.println("3. Print graph \n");
+				System.out.println("4. Exit \n\n");
+				System.out.println("Option: ");
+
+				option = Integer.parseInt(br.readLine()); 
+				System.out.println("\n\n------------------\n");
+				executeOption(option);
+			}
+			catch (IOException e) {
+				System.out.println("Error: " + e.getMessage());
+			}
+		} while (option != 4);
+	}
+	
+	public static void executeOption(int option) {		
+		switch (option) {
+		case 1:
+			insertVertex();
+
+			break;
+		case 2:
+			int origen, destino, costo, distancia;
+			System.out.println("Origen: ");
+			cin >> origen;
+
+			cout << "\nDestino: ";
+			cin >> destino;
+
+			cout << "\nCosto: ";
+			cin >> costo;
+
+			cout << "\nDistancia: ";
+			cin >> distancia;
+
+			if (grafo->insertarArco(origen, destino, costo, distancia))
+				cout << "\nInsertado con éxito!\n\n";
+			else
+				cout << "\nNo pudo ser insertado.\n\n";
+
+			break;
+		case 3:
+			grafo->dibujar();
+
+			break;
+
+		case 4: system("pause");
+
+		default:
+			cout << "\nOpcion invalida\n\n";
+
+			break;
+		}
+	}
+}

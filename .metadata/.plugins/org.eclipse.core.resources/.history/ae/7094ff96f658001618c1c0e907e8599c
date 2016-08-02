@@ -1,0 +1,15 @@
+
+public class Main {
+	private static Graph graph;
+	static final int MAX_VERTEX = 20;
+	private static Vertex vertex[];
+	
+	public static void main (String [] args) {
+		//graph = new Graph();
+		vertex = new Vertex[MAX_VERTEX];
+		
+		System.out.println("Hello world!");
+		System.out.println(vertex[1]);
+		
+	}
+}

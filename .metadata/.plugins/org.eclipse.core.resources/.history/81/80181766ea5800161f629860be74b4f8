@@ -1,0 +1,15 @@
+public class Arc {
+	private int distance;
+	
+	public Arc() {
+		
+	}
+	
+	public int distance() {
+		return distance;
+	}
+	
+	public void distance(int _distance) {
+		distance = _distance;
+	}
+}

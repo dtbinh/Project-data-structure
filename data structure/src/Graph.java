@@ -1,0 +1,56 @@
+public class Graph {
+	static final int MAX_VERTEX = 20;
+	private Vertex vertex[];
+	private Arc arc[][];
+	
+	public Graph() {
+		vertex = new Vertex[MAX_VERTEX];
+		arc = new Arc[MAX_VERTEX][MAX_VERTEX];
+	}
+	
+	private int searchIndex(String nameVertex) {
+		for (int i = 0; i < MAX_VERTEX; i++) {
+			if (vertex[i] != null) {
+				if (vertex[i].getName() == nameVertex) {
+					return i;
+				}
+			}
+		}
+		
+		return -1;
+	}
+		
+	public void insertVertex(int id, String name) {
+		for (int i = 0; i < MAX_VERTEX; i++) {
+			if (vertex[i] == null) {
+				vertex[i] = new Vertex(id, name);
+				break;
+			}
+		}
+	}
+	
+	public Boolean insertArc(String _origin, String _destination, int distance) {
+		int origin = searchIndex(_origin);
+		int destination = searchIndex(_destination);
+		
+		if (origin != -1 && destination != -1) {
+			arc[origin][destination] = new Arc(distance);
+			return true;
+			
+		} else {
+			return false;
+		}
+	}
+	
+	public void print() {
+		for (int i = 0; i < MAX_VERTEX; i++) {
+			for (int j = 0; j < MAX_VERTEX; j++) {
+				if (arc[i][j] != null) {
+					System.out.println("\nOrigen: " + vertex[i].getName());
+					System.out.println("\nDistancia: " + arc[i][j].getDistance());
+					System.out.println("\nDestino: " + vertex[j].getName());
+				}
+			}
+		}
+	}
+}

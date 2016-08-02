@@ -1,0 +1,18 @@
+public class Graph {
+	private Vertex[];
+	private Arc arc[][];
+	
+	public Graph() {
+		
+	}
+	
+	public void insertVertex(int id, String name) {
+		
+	}
+	
+	public Boolean insertArc(int place1, int place2, int distance) {
+		
+		
+		return true;
+	}
+}

@@ -1,0 +1,11 @@
+
+public class Main {
+	private static Graph graph;
+	
+	public static void main (String [] args) {
+		graph = new Graph();
+		
+		System.out.println("Hello world!");
+		
+	}
+}
