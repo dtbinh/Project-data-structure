@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.canvas.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.BorderPane?>
+
+<BorderPane prefHeight="480.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.FormController">
+   <top>
+      <FlowPane prefHeight="38.0" prefWidth="656.0" BorderPane.alignment="CENTER">
+         <children>
+            <HBox spacing="20.0">
+               <children>
+                  <HBox spacing="10.0">
+                     <children>
+                        <Label text="Value:" />
+                        <TextField fx:id="txtVertexVal" prefHeight="25.0" prefWidth="71.0" />
+                        <Button mnemonicParsing="false" onMouseClicked="#addVertex" text="Add vertex" />
+                     </children>
+                  </HBox>
+                  <HBox spacing="10.0">
+                     <children>
+                        <Label text="Origin:" />
+                        <TextField fx:id="txtArcOrigin" prefHeight="25.0" prefWidth="71.0" />
+                        <Label text="End:" />
+                        <TextField fx:id="txtArcEnd" prefHeight="25.0" prefWidth="71.0" />
+                        <Label text="Distance:" />
+                        <TextField fx:id="txtArcDistance" prefHeight="25.0" prefWidth="71.0" />
+                        <Button mnemonicParsing="false" onMouseClicked="#addArc" text="Add arc" />
+                     </children>
+                  </HBox>
+               </children>
+            </HBox>
+         </children>
+      </FlowPane>
+   </top>
+   <center>
+      <Canvas fx:id="pCanvas" height="435.0" width="652.0" BorderPane.alignment="CENTER" />
+   </center>
+</BorderPane>

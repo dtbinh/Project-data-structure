@@ -1,6 +1,43 @@
 package ui;
 
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+
+public class GraphicVertex extends Circle implements GraphicObject {
+
+	public static final double SIZE = 50d;
+	private String value;
+	
+	public GraphicVertex(String value, double x, double y){
+		super(x, y, SIZE, Color.BLACK);
+		this.value = value;
+		
+		setStroke(Color.AQUAMARINE);
+	}
+	
+	public String getValue() {
+		return value;
+	}
+
+	public void setValue(String value) {
+		this.value = value;
+	}
+	
+	public void drawSelf(GraphicsContext gc){
+		if(isVisible()){
+			gc.fillOval(getCenterX(), getCenterY(), getRadius(), getRadius());
+			gc.strokeOval(getCenterX(), getCenterY(), getRadius(), getRadius());
+			
+			gc.fillText(getValue(), getCenterX(), getCenterY());
+		}
+	}
+}
+
+
+/*package ui;
+
+import javafx.scene.canvas.GraphicsContext;
 
 public class GraphicVertex implements GraphicObject {
 
@@ -55,4 +92,4 @@ public class GraphicVertex implements GraphicObject {
 			gc.strokeText(value, x + (SIZE/2) - 4.8d, y + (SIZE/2) + 3);
 		}
 	}
-}
+}*/
