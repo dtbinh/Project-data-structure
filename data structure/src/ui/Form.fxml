@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
+<?import javafx.scene.*?>
 <?import javafx.scene.canvas.*?>
 <?import javafx.scene.control.*?>
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.BorderPane?>
 
-<BorderPane prefHeight="480.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.FormController">
+<BorderPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0" prefWidth="680.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.FormController">
    <top>
       <FlowPane prefHeight="38.0" prefWidth="656.0" BorderPane.alignment="CENTER">
          <children>
@@ -14,28 +16,41 @@
                <children>
                   <HBox spacing="10.0">
                      <children>
-                        <Label text="Value:" />
+                        <Label fx:id="lblValue" mnemonicParsing="true" text="Value:">
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor></Label>
                         <TextField fx:id="txtVertexVal" prefHeight="25.0" prefWidth="71.0" />
-                        <Button mnemonicParsing="false" onMouseClicked="#addVertex" text="Add vertex" />
+                        <Button mnemonicParsing="false" onKeyPressed="#addVertex" onMouseClicked="#addVertex" text="Add vertex" />
                      </children>
                   </HBox>
                   <HBox spacing="10.0">
                      <children>
-                        <Label text="Origin:" />
-                        <TextField fx:id="txtArcOrigin" prefHeight="25.0" prefWidth="71.0" />
-                        <Label text="End:" />
-                        <TextField fx:id="txtArcEnd" prefHeight="25.0" prefWidth="71.0" />
-                        <Label text="Distance:" />
-                        <TextField fx:id="txtArcDistance" prefHeight="25.0" prefWidth="71.0" />
-                        <Button mnemonicParsing="false" onMouseClicked="#addArc" text="Add arc" />
+                        <Label fx:id="lblOrigin" onMouseClicked="#pickOrigin" text="Origin vertex: [ ]" textFill="#2600ff" underline="true" wrapText="true">
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor></Label>
+                        <Label fx:id="lblEnd" onMouseClicked="#pickEnd" text="End vertex: [ ]" textFill="#2600ff" underline="true" wrapText="true">
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor></Label>
+                        <Label fx:id="lblDistance" mnemonicParsing="true" text="Distance:">
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor></Label>
+                        <TextField fx:id="txtArcDistance" alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="71.0" promptText="0.0" />
+                        <Button mnemonicParsing="false" onKeyPressed="#addArc" onMouseClicked="#addArc" text="Add arc" />
                      </children>
                   </HBox>
                </children>
+               <FlowPane.margin>
+                  <Insets left="10.0" />
+               </FlowPane.margin>
             </HBox>
          </children>
       </FlowPane>
    </top>
    <center>
-      <Canvas fx:id="pCanvas" height="435.0" width="652.0" BorderPane.alignment="CENTER" />
+      <Group fx:id="pGroup" BorderPane.alignment="CENTER" />
    </center>
 </BorderPane>

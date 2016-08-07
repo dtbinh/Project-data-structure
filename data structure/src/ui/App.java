@@ -25,9 +25,6 @@ public class App extends Application {
 			Scene stage = new Scene(rootLayout);
 			primaryStage.setScene(stage);
 			primaryStage.show();
-			
-			FormController ctrl = loader.getController();
-			//ctrl.run();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
