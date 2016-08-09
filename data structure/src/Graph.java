@@ -11,7 +11,7 @@ public class Graph {
 	private int searchIndex(String nameVertex) {
 		for (int i = 0; i < MAX_VERTEX; i++) {
 			if (vertex[i] != null) {
-				if (vertex[i].getName() == nameVertex) {
+				if (vertex[i].getName().equals(nameVertex)) {
 					return i;
 				}
 			}
@@ -20,21 +20,56 @@ public class Graph {
 		return -1;
 	}
 		
-	public void insertVertex(int id, String name) {
+	public void insertVertex(int id, String name, int positionX, int positionY) {
 		for (int i = 0; i < MAX_VERTEX; i++) {
 			if (vertex[i] == null) {
-				vertex[i] = new Vertex(id, name);
+				vertex[i] = new Vertex(id, name, positionX, positionY);
 				break;
 			}
 		}
 	}
 	
-	public Boolean insertArc(String _origin, String _destination, int distance) {
+	/**
+	 * Insert arc
+	 * @param _origin
+	 * @param _destination
+	 * @param distance
+	 * @return 4 if origin and destination not found. 3 if destination not found. 2 if origin not found. 1 if insert is success.   
+	 */
+	public int insertArc(String _origin, String _destination, int distance) {
 		int origin = searchIndex(_origin);
 		int destination = searchIndex(_destination);
 		
 		if (origin != -1 && destination != -1) {
 			arc[origin][destination] = new Arc(distance);
+			return 1;
+			
+		} else if (origin == -1 && destination != -1) {
+			return 2;
+			
+		} else if (destination == -1 && origin != -1) {
+			return 3;
+			
+		} else {
+			return 4;
+		}
+	}
+	
+	/**
+	 * 
+	 * @param name
+	 * @return true if vertex is found, false if vertex not found.
+	 */
+	public boolean deleteVertex(String name) {
+		int indexVertex = searchIndex(name);
+		
+		if (indexVertex != -1) {
+			vertex[indexVertex] = null;
+			
+			for (int i = 0; i < MAX_VERTEX; i++) {
+				if (arc[indexVertex][i] != null)
+					arc[indexVertex][i] = null;
+			}		
 			return true;
 			
 		} else {
@@ -42,13 +77,69 @@ public class Graph {
 		}
 	}
 	
+	/**
+	 * Delete arc
+	 * @param _origin
+	 * @param _destination
+	 * @return 4 if origin and destination not found. 3 if destination not found. 2 if origin not found. 1 if insert is success.   
+	 */
+	public int deleteArc(String _origin, String _destination) {
+		int origin = searchIndex(_origin);
+		int destination = searchIndex(_destination);
+		
+		if (origin != -1 && destination != -1) {
+			arc[origin][destination] = null;
+			return 1;
+			
+		} else if (origin == -1 && destination != -1) {
+			return 2;
+			
+		} else if (destination == -1 && origin != -1) {
+			return 3;
+			
+		} else {
+			return 4;
+		}		
+	}
+	
+	public void shortestPath(String origin) {
+		int[] lastVisited = new int[MAX_VERTEX];
+		int[] distances = new int[MAX_VERTEX];
+		boolean[] vertexVisited = new boolean[MAX_VERTEX];
+		int indexOrigin = searchIndex(origin);
+		
+		for (int i = 0; i < MAX_VERTEX; i++) {
+			vertexVisited[i] = false;
+			distances[i] = arc[indexOrigin][i].getDistance();
+			lastVisited[i] = indexOrigin;
+		}
+		
+		for (int i = 0; i < MAX_VERTEX; i++) {
+			//int v = calcMinimun(); https://www.youtube.com/watch?v=GP9jMQYWS28
+			
+			vertexVisited[i] = true;
+			
+			for (int j = 0; j < MAX_VERTEX; j++) {
+				if (!vertexVisited[i]) {
+					if ((distances[v] + arc[v][j].getDistance()) < distances[j]) {
+						distances[j] = distances[v] + arc[v][j].getDistance();
+						lastVisited[j] = v;
+					}
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Linear path for test
+	 */
 	public void print() {
 		for (int i = 0; i < MAX_VERTEX; i++) {
 			for (int j = 0; j < MAX_VERTEX; j++) {
 				if (arc[i][j] != null) {
-					System.out.println("\nOrigen: " + vertex[i].getName());
-					System.out.println("\nDistancia: " + arc[i][j].getDistance());
-					System.out.println("\nDestino: " + vertex[j].getName());
+					System.out.println("Origen: " + vertex[i].getName());
+					System.out.println("Distancia: " + arc[i][j].getDistance());
+					System.out.println("Destino: " + vertex[j].getName() + "\n");
 				}
 			}
 		}
