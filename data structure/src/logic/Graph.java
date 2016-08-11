@@ -1,5 +1,7 @@
 package logic;
 
+import java.util.ArrayList;
+
 public class Graph {
 	static final int MAX_VERTEX = 20;
 	private HashTable hash;
@@ -26,7 +28,33 @@ public class Graph {
 		
 		return -1;
 	}
+	
+	/**
+	 * 
+	 * @param index
+	 * @return
+	 */
+	public Vertex searchVertex(int index) {
+		return vertex[index];
+	}
+	
+	/**
+	 * 
+	 * @param index
+	 * @return
+	 */
+	public ArrayList<Arc> searchArcs(int index) {
+		ArrayList<Arc> arcs = new ArrayList();
 		
+		for (int i = 0; i < MAX_VERTEX; i++) {
+			if (arc[index][i] != null) {
+				arcs.add(arc[index][i]);
+			}	
+		}
+		
+		return arcs;
+	}
+	
 	public void insertVertex(int id, String name, int positionX, int positionY) {
 		for (int i = 0; i < MAX_VERTEX; i++) {
 			if (vertex[i] == null) {
