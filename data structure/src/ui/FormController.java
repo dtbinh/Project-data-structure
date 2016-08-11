@@ -9,10 +9,12 @@ import javafx.fxml.FXML;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
@@ -49,12 +51,40 @@ public class FormController {
 
 	@FXML
 	private Label lblDistance;
+
+	// ------------------------
+	@FXML
+	private StackPane pnlInfo;
 	
+	@FXML
+	private AnchorPane pnlVertex;
+	
+	@FXML
+	private AnchorPane pnlArc;
+	
+	@FXML
+	private TextField txtVertexDescVal;
+	
+	@FXML
+	private ListView<ListArc> lstArcs;
+	
+	@FXML
+	private TextField txtArcDistanceDesc;
+	
+	@FXML
+	private Label shortcutOrigin;
+	
+	@FXML
+	private Label shortcutEnd;
+	
+	// ------------------------
 	private Management gestor;
 	private boolean originSelect;
 	private boolean endSelect;
 	private StackPane originVertex;
 	private StackPane endVertex;
+	private StackPane selectedVertex;
+	private Pane selectedArc;
 	
 	@FXML
 	private void initialize(){
@@ -65,6 +95,7 @@ public class FormController {
 		
 		Platform.runLater(new Runnable(){
 			public void run(){
+				gestor.initialize();
 				load();
 			}
 		});
@@ -74,27 +105,22 @@ public class FormController {
 		Vertex[] vertexs = gestor.getVertexs();
 		
 		for(Vertex v : vertexs){
-			if(v != null)
-				makeVertex(v);
+			if(v != null){
+				StackPane stack = makeVertex(v);
+				pGroup.getChildren().add(stack);
+			}
 		}
 		
-		double limit = RADIUS * 2;
-		double x = limit + Math.random() * (App.getAppWidth().doubleValue() - limit);
-		double y = limit + Math.random() * (App.getAppHeight().doubleValue() - limit);
+		/*Arc[][] arcs = new Arc[0][0];
 		
-		Vertex v1 = new Vertex(0, "A", x, y);
-		StackPane stack1 = makeVertex(v1);
-		pGroup.getChildren().add(stack1);
-		
-		x = limit + Math.random() * (App.getAppWidth().doubleValue() - limit);
-		y = limit + Math.random() * (App.getAppHeight().doubleValue() - limit);
-		
-		Vertex v2 = new Vertex(0, "B", x, y);				
-		StackPane stack2 = makeVertex(v2);
-		pGroup.getChildren().add(stack2);
-		
-		Pane stack3 = addArc(new Arc(10.6), stack1, stack2);
-		pGroup.getChildren().add(stack3);
+		for(Arc[] relations : arcs){
+			for(Arc arc : relations){
+				if(arc != null){
+					//Pane stack = addArc(arc);
+					//pGroup.getChildren().add(stack);
+				}
+			}
+		}*/
 	}
 	
 	@FXML
@@ -108,6 +134,8 @@ public class FormController {
 				double limit = RADIUS * 2;
 				double x = limit + Math.random() * (App.getAppWidth().doubleValue() - limit);
 				double y = limit + Math.random() * (App.getAppHeight().doubleValue() - limit);
+				
+				gestor.insertVertex(vertexVal, (int)x, (int)y);
 				
 				Vertex v = new Vertex(0, vertexVal, x, y);				
 				StackPane stack = makeVertex(v);
@@ -140,8 +168,12 @@ public class FormController {
 		
 		if(originVertex != null && endVertex != null && (distance != null && distance.length() > 0 && !distance.contains(" "))){
 			Arc arc = new Arc(Double.parseDouble(distance));
-			Pane stack = addArc(arc, originVertex, endVertex);
+			Pane stack = makeArc(arc, originVertex, endVertex);
 			pGroup.getChildren().add(stack);
+			
+			Text origin = (Text)originVertex.getChildren().get(1);
+			Text end = (Text)endVertex.getChildren().get(1);
+			gestor.insertArc(origin.getText(), end.getText(), Integer.parseInt(distance));
 			
 			txtArcDistance.setText("");
 			
@@ -159,7 +191,7 @@ public class FormController {
 		}
 	}
 	
-	private Pane addArc(Arc arc, StackPane origin, StackPane end){
+	private Pane makeArc(Arc arc, StackPane origin, StackPane end){
 		Line line = new Line();
 		Text label = new Text(String.valueOf(arc.getDistance()));
 		
@@ -252,6 +284,17 @@ public class FormController {
 		
 		circle.setOnMouseClicked(new EventHandler<MouseEvent>(){
 			public void handle(MouseEvent e){
+				if(!originSelect && !endSelect){
+					if(e.getClickCount() >= 2){
+						pnlVertex.setVisible(true);
+						pnlArc.setVisible(false);
+						pnlInfo.setVisible(true);
+						
+						txtVertexDescVal.setText(text.getText());
+						// llenar lista de arcos
+					}
+				}
+				
 				if(originSelect){
 					if(originVertex == null){
 						circle.setFill(Color.LIGHTBLUE);
@@ -375,5 +418,93 @@ public class FormController {
 	private void relocateText(Text text, StackPane rootNode, double hipotenusa, double angle){
 		text.setX(rootNode.translateXProperty().doubleValue() + (-(hipotenusa / 2) * Math.cos(angle)));
 		text.setY(rootNode.translateYProperty().doubleValue() + (-(hipotenusa / 2) * Math.sin(angle)));
+	}
+
+	// ---------------------
+	
+	@FXML
+	private void hideInfoPanel(){
+		pnlInfo.setVisible(false);
+	}
+	
+	@FXML
+	private void applyVertexChanges(KeyEvent e){
+		
+	}
+	
+	@FXML
+	private void deleteVertex(){
+		if(selectedVertex != null){
+			Text text = (Text)selectedVertex.getChildren().get(1);
+			gestor.deleteVertex(text.getText());
+			pGroup.getChildren().remove(selectedVertex);
+		}
+	}
+	
+	@FXML
+	private void clearArcs(){
+		
+	}
+	
+	@FXML
+	private void gotoArc(){
+		
+	}
+	
+	@FXML
+	private void applyDistance(KeyEvent e){
+		
+	}
+	
+	@FXML
+	private void gotoOrigin(){
+		
+	}
+	
+	@FXML
+	private void gotoEnd(){
+		
+	}
+	
+	@FXML
+	private void deleteArc(){
+		if(selectedArc != null){
+			/*Text text = (Text)selectedArc.getChildren().get(1);
+			gestor.deleteArc(text.getText());
+			pGroup.getChildren().remove(selectedVertex);*/
+		}
+	}
+	
+	private static class ListArc{
+		private StackPane origin;
+		private StackPane end;
+		
+		public ListArc(StackPane origin, StackPane end){
+			this.origin = origin;
+			this.end = end;
+		}
+		
+		public StackPane getOrigin(){
+			return origin;
+		}
+		
+		public void setOrigin(StackPane origin){
+			this.origin = origin;
+		}
+		
+		public StackPane getEnd(){
+			return end;
+		}
+		
+		public void setEnd(StackPane end){
+			this.end = end;
+		}
+		
+		public String toString(){
+			Text textOrigin = (Text)origin.getChildren().get(1);
+			Text textEnd = (Text)end.getChildren().get(1);
+			
+			return textOrigin.getText() + " -> " + textEnd.getText();
+		}
 	}
 }

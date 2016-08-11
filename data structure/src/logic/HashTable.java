@@ -11,19 +11,19 @@ public class HashTable {
 		int hashCode = hash(vertex.getName());
 		
 		if(table[hashCode] == null)
-			table[hashCode] = new HashNode(hashCode, vertex);
+			table[hashCode] = new HashNode(vertex.getId(), hashCode);
 		else{
 			HashNode temp = table[hashCode];
 			
 			while(temp.getNext() != null)
 				temp = temp.getNext();
 			
-			temp.setNext(new HashNode(hashCode, vertex));
+			temp.setNext(new HashNode(vertex.getId(), hashCode));
 		}
 	}
 	
-	public Vertex get(String name){
-		int hashCode = hash(name);
+	public int getId(String name){
+		/*int hashCode = hash(name);
 		HashNode temp = table[hashCode];
 		
 		while(temp.getNext() != null){
@@ -31,9 +31,9 @@ public class HashTable {
 				return temp.getVertex();
 			
 			temp = temp.getNext();
-		}
+		}*/
 		
-		return null;
+		return 0;
 	}
 	
 	public int getIndex(String name){
