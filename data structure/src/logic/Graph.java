@@ -5,6 +5,8 @@ public class Graph {
 	private HashTable hash;
 	private Vertex vertex[];
 	private Arc arc[][];
+	boolean[] vertexVisited;
+	int[] distances;
 	
 	public Graph() {
 		vertex = new Vertex[MAX_VERTEX];
@@ -109,8 +111,8 @@ public class Graph {
 	
 	public void shortestPath(String origin) {
 		int[] lastVisited = new int[MAX_VERTEX];
-		int[] distances = new int[MAX_VERTEX];
-		boolean[] vertexVisited = new boolean[MAX_VERTEX];
+		distances = new int[MAX_VERTEX];
+		vertexVisited = new boolean[MAX_VERTEX];
 		int indexOrigin = searchIndex(origin);
 		
 		for (int i = 0; i < MAX_VERTEX; i++) {
@@ -120,7 +122,7 @@ public class Graph {
 		}
 		
 		for (int i = 0; i < MAX_VERTEX; i++) {
-			//int v = calcMinimun(); https://www.youtube.com/watch?v=GP9jMQYWS28
+			int v = calcMinimun();
 			
 			vertexVisited[i] = true;
 			
@@ -133,6 +135,19 @@ public class Graph {
 				}
 			}*/
 		}
+	}
+	
+	private int calcMinimun() {
+		int max = 9999;
+		int index = 1;
+		/*
+		for (int i = 0; i < n; i++) {
+			if (!vertexVisited[i] && (distances[i] <= max)) {
+				max = distances[i];
+				index = i;
+			}
+		} */
+		return index;
 	}
 	
 	/**
