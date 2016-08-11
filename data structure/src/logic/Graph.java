@@ -1,5 +1,8 @@
+package logic;
+
 public class Graph {
 	static final int MAX_VERTEX = 20;
+	private HashTable hash;
 	private Vertex vertex[];
 	private Arc arc[][];
 	boolean[] vertexVisited;
@@ -8,6 +11,8 @@ public class Graph {
 	public Graph() {
 		vertex = new Vertex[MAX_VERTEX];
 		arc = new Arc[MAX_VERTEX][MAX_VERTEX];
+		
+		hash = new HashTable();
 	}
 	
 	private int searchIndex(String nameVertex) {
@@ -112,7 +117,7 @@ public class Graph {
 		
 		for (int i = 0; i < MAX_VERTEX; i++) {
 			vertexVisited[i] = false;
-			distances[i] = arc[indexOrigin][i].getDistance();
+			distances[i] = (int)arc[indexOrigin][i].getDistance();
 			lastVisited[i] = indexOrigin;
 		}
 		
@@ -121,14 +126,14 @@ public class Graph {
 			
 			vertexVisited[i] = true;
 			
-			for (int j = 0; j < MAX_VERTEX; j++) {
+			/*for (int j = 0; j < MAX_VERTEX; j++) {
 				if (!vertexVisited[i]) {
 					if ((distances[v] + arc[v][j].getDistance()) < distances[j]) {
 						distances[j] = distances[v] + arc[v][j].getDistance();
 						lastVisited[j] = v;
 					}
 				}
-			}
+			}*/
 		}
 	}
 	
@@ -158,5 +163,18 @@ public class Graph {
 				}
 			}
 		}
+	}
+	
+	public void fillHash() {
+		hash.init(MAX_VERTEX);
+		
+		for (Vertex v : vertex) {
+			if (v != null)
+				hash.put(v);
+		}
+	}
+	
+	public Vertex[] getVertexs(){
+		return vertex;
 	}
 }

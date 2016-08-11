@@ -1,15 +1,16 @@
+package logic;
 
 public class Vertex {
 	private int id;
 	private String name;
-	private int positionX;
-	private int positionY;
+	private double positionX;
+	private double positionY;
 	
-	public Vertex(int _id, String _name, int _positionX, int _positionY) {
+	public Vertex(int _id, String _name, double x, double y) {
 		this.id = _id;
 		this.name = _name;
-		this.positionX = _positionX;
-		this.positionY = _positionY;
+		this.positionX = x;
+		this.positionY = y;
 	}
 
 	public int getId() {
@@ -28,19 +29,20 @@ public class Vertex {
 		name = _name;
 	}
 
-	public int getPositionX() {
+	public double getPositionX() {
 		return positionX;
 	}
 
-	public void setPositionX(int _positionX) {
+	public void setPositionX(double _positionX) {
 		positionX = _positionX;
 	}
 
-	public int getPositionY() {
+	public double getPositionY() {
 		return positionY;
 	}
 
-	public void setPositionY(int _positionY) {
+	public void setPositionY(double _positionY) {
 		positionY = _positionY;
 	}
+	
 }

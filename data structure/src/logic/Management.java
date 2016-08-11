@@ -1,7 +1,8 @@
+package logic;
 public class Management {
-	private static Graph graph;
+	private Graph graph;
 	
-	public static void initialize () {
+	public void initialize () {
 		graph = new Graph();
 		
 		graph.insertVertex(0, "0", 0, 0);
@@ -24,13 +25,13 @@ public class Management {
 		graph.insertArc("3", "4", 105);
 	}
 	
-	public static void insertVertex(String name, int positionX, int positionY) {
+	public void insertVertex(String name, int positionX, int positionY) {
 
 		graph.insertVertex(0, name, positionX, positionY);
 
 	}
 	
-	public static int insertArc(String origin, String destination, int distance) {
+	public int insertArc(String origin, String destination, int distance) {
 		int result = 0;
 			
 		result = graph.insertArc(origin, destination, distance);
@@ -38,7 +39,7 @@ public class Management {
 		return result;
 	}
 	
-	public static boolean deleteVertex(String name) {	
+	public boolean deleteVertex(String name) {	
 		boolean result = false;
 		
 		result = graph.deleteVertex(name);
@@ -46,11 +47,15 @@ public class Management {
 		return result;		
 	}
 	
-	public static int deleteArc(String origin, String destination) {
+	public int deleteArc(String origin, String destination) {
 		int result = 0;
 		
 		result = graph.deleteArc(origin, destination);
 		
 		return result;
+	}
+	
+	public Vertex[] getVertexs(){
+		return graph.getVertexs();
 	}
 }
