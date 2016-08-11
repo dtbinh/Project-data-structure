@@ -3,14 +3,14 @@ package logic;
 public class HashNode {
 
 	private HashNode next;
-	private Vertex vertex;
+	private int id;
 	private int index;
 	
 	public HashNode(){ }
 	
-	public HashNode(int index, Vertex vertex){
+	public HashNode(int id, int index){
+		this.id = id;
 		this.index = index;
-		this.vertex = vertex;
 	}
 	
 	public HashNode getNext() {
@@ -21,12 +21,12 @@ public class HashNode {
 		this.next = next;
 	}
 	
-	public Vertex getVertex() {
-		return vertex;
+	public int getId() {
+		return id;
 	}
 	
-	public void setVertex(Vertex vertex) {
-		this.vertex = vertex;
+	public void setID(int id) {
+		this.id = id;
 	}
 	
 	public int getIndex() {

@@ -159,6 +159,21 @@ public class Graph {
 		}
 	}
 	
+	public int getVertexId(String name){
+		// implementar???
+		return 0;
+	}
+	
+	public String getVertexName(int id){
+		// implementar???
+		return "";
+	}
+	
+	public boolean hasPath(String originVertex, String endVertex){
+		Arc arc = this.arc[hash.getIndex(originVertex)][hash.getIndex(endVertex)];
+		return arc != null;
+	}
+	
 	public Vertex[] getVertexs(){
 		return vertex;
 	}
