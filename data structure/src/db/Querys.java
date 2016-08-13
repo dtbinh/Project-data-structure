@@ -15,8 +15,11 @@ public enum Querys {
 	DELETE_ALL_VERTEX_ARC_FROM_END("DELETE FROM arc WHERE end = :id;"),
 	DELETE_ARC("DELETE FROM arc WHERE id = :id;"),
 	
-	UPDATE_VERTEX("UPDATE vertex SET name = :name, x = :x, y = :y WHERE id = :id;"),
-	UPDATE_ARC("UPDATE arc SET distance = :distance, origin = :origin, end = :end WHERE id = :id;");
+	UPDATE_VERTEX_POS("UPDATE vertex SET x = :x, y = :y WHERE id = :id;"),
+	UPDATE_VERTEX_NAME("UPDATE vertex SET name = :name WHERE id = :id;"),
+	
+	//UPDATE_ARC("UPDATE arc SET distance = :distance, origin = :origin, end = :end WHERE id = :id;"),
+	UPDATE_ARC_DISTANCE("UPDATE arc SET distance = :distance WHERE id = :id;");
 	
 	// ---------------------------
 	

@@ -11,7 +11,7 @@
 
 <BorderPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0" prefWidth="680.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.FormController">
    <top>
-      <FlowPane prefHeight="38.0" prefWidth="656.0" BorderPane.alignment="CENTER">
+      <FlowPane prefHeight="38.0" prefWidth="656.0" style="-fx-background-color: WHITE;" BorderPane.alignment="CENTER">
          <children>
             <HBox spacing="20.0">
                <children>
@@ -49,13 +49,16 @@
                </FlowPane.margin>
             </HBox>
          </children>
+         <opaqueInsets>
+            <Insets />
+         </opaqueInsets>
       </FlowPane>
    </top>
    <center>
       <Group fx:id="pGroup" BorderPane.alignment="CENTER" />
    </center>
    <right>
-      <StackPane fx:id="pnlInfo" style="-fx-border-color: LIGHTGRAY; -fx-border-width: 0px 0px 0px 2px;" visible="false">
+      <StackPane fx:id="pnlInfo" style="-fx-border-color: LIGHTGRAY; -fx-border-width: 0px 0px 0px 2px; -fx-background-color: WHITE;" visible="false">
          <children>
             <AnchorPane fx:id="pnlVertex" prefHeight="200.0" prefWidth="200.0" visible="false" BorderPane.alignment="CENTER">
                <children>
@@ -81,7 +84,10 @@
                         <Font name="System Bold" size="12.0" />
                      </font>
                   </Label>
-                  <ListView fx:id="lstArcs" layoutX="14.0" layoutY="123.0" onMouseClicked="#gotoArc" prefHeight="270.0" prefWidth="172.0" AnchorPane.bottomAnchor="47.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="125.0" />
+                  <ListView fx:id="lstArcs" layoutX="14.0" layoutY="123.0" onMouseClicked="#gotoArc" prefHeight="270.0" prefWidth="172.0" AnchorPane.bottomAnchor="47.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="125.0">
+                     <cursor>
+                        <Cursor fx:constant="DEFAULT" />
+                     </cursor></ListView>
                   <Button id="btnHide" ellipsisString="Hide" layoutX="160.0" layoutY="416.0" mnemonicParsing="false" onMouseClicked="#hideInfoPanel" style="-fx-background-color: none;" text="&gt;" textFill="#8d8d8d" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="5.0">
                      <cursor>
                         <Cursor fx:constant="HAND" />

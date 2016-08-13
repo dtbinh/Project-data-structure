@@ -8,6 +8,7 @@ import db.Querys;
 
 public class Management {
 	private Graph graph;
+	private static boolean showSQL = true;
 	
 	public void initialize () {
 		graph = new Graph();
@@ -44,7 +45,7 @@ public class Management {
 	public void insertVertex(String name, int positionX, int positionY) {
 		try{
 			String[] params = new String[]{
-				":name="+name,
+				":name='"+name+"'",
 				":x="+positionX,
 				":y="+positionY
 			};
@@ -72,7 +73,7 @@ public class Management {
 		return result;
 	}
 	
-	public boolean deleteVertex(String name) {	
+	public boolean deleteVertex(int idVertex, String name) {	
 		boolean result = false;
 		
 		try{
@@ -89,12 +90,49 @@ public class Management {
 		return result;		
 	}
 	
-	public int deleteArc(String origin, String destination) {
+	public int deleteArc(int idArc, String origin, String destination) {
 		int result = 0;
 		
-		result = graph.deleteArc(origin, destination);
+		try{
+			result = graph.deleteArc(origin, destination);
+			executeQuery(Querys.DELETE_ARC, new String[]{ ":id="+idArc });
+		}catch(Exception e){ e.printStackTrace(); }
 		
 		return result;
+	}
+	
+	public void updateVertex(int id, String name){
+		String[] params = new String[]{
+				":id="+id,
+				":name="+name
+		};
+		
+		try{
+			executeQuery(Querys.UPDATE_VERTEX_NAME, params);
+		}catch(Exception e){ e.printStackTrace(); }
+	}
+	
+	public void updateVertex(int id, double x, double y){
+		String[] params = new String[]{
+				":id="+id,
+				":x="+x,
+				":y"+y
+		};
+		
+		try{
+			executeQuery(Querys.UPDATE_VERTEX_POS, params);
+		}catch(Exception e){ e.printStackTrace(); }
+	}
+	
+	public void updateArc(int id, int distance){
+		String[] params = new String[]{
+				":id="+id,
+				":distance="+distance
+		};
+		
+		try{
+			executeQuery(Querys.UPDATE_ARC_DISTANCE, params);
+		}catch(Exception e){ e.printStackTrace(); }
 	}
 	
 	public Vertex[] getVertexs(){
@@ -108,9 +146,16 @@ public class Management {
 			for(String param : params){
 				String[] split = param.split("="); // :field = value
 				String field = split[0].startsWith(":")? split[0] : ":".concat(split[0]);
+				
+				if(showSQL)
+					System.out.println("[FIELD]: " + field + " | [VALUE]: " + split[1]);
+				
 				sql = sql.replace(field, split[1]);
 			}
 		}
+		
+		if(showSQL)
+			System.out.println(sql);
 		
 		return Conector.getConector().ejecutarSQL(sql);
 	}

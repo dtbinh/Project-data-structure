@@ -9,6 +9,7 @@ import javafx.fxml.FXML;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
@@ -23,6 +24,7 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.StrokeLineCap;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.util.Callback;
 import logic.Arc;
 import logic.Management;
 import logic.Vertex;
@@ -66,7 +68,7 @@ public class FormController {
 	private TextField txtVertexDescVal;
 	
 	@FXML
-	private ListView<ListArc> lstArcs;
+	private ListView<ArcNode> lstArcs;
 	
 	@FXML
 	private TextField txtArcDistanceDesc;
@@ -81,10 +83,10 @@ public class FormController {
 	private Management gestor;
 	private boolean originSelect;
 	private boolean endSelect;
-	private StackPane originVertex;
-	private StackPane endVertex;
-	private StackPane selectedVertex;
-	private Pane selectedArc;
+	private VertexNode originVertex;
+	private VertexNode endVertex;
+	private VertexNode selectedVertex;
+	private ArcNode selectedArc;
 	
 	@FXML
 	private void initialize(){
@@ -92,6 +94,22 @@ public class FormController {
 		
 		lblValue.setLabelFor(txtVertexVal);
 		lblDistance.setLabelFor(txtArcDistance);
+		
+		lstArcs.setCellFactory(new Callback<ListView<ArcNode>, ListCell<ArcNode>>(){
+			public ListCell<ArcNode> call(ListView<ArcNode> param) {
+				ListCell<ArcNode> cells = new ListCell<ArcNode>(){
+					protected void updateItem(ArcNode item, boolean empty){
+						super.updateItem(item, empty);
+						if(item != null)
+							setText(item.toString());
+						else
+							setText(null);
+					}
+				};
+				
+				return cells;
+			}
+		});
 		
 		Platform.runLater(new Runnable(){
 			public void run(){
@@ -146,11 +164,11 @@ public class FormController {
 		}
 	}
 	
-	private StackPane makeVertex(Vertex v){
+	private VertexNode makeVertex(Vertex v){
 		Circle vertex = new Circle(RADIUS);
 		Text label = new Text(v.getName());
 		
-		StackPane stack = new StackPane();
+		VertexNode stack = new VertexNode();
 		stack.getChildren().add(vertex);
 		stack.getChildren().add(label);
 		
@@ -191,11 +209,11 @@ public class FormController {
 		}
 	}
 	
-	private Pane makeArc(Arc arc, StackPane origin, StackPane end){
+	private ArcNode makeArc(Arc arc, VertexNode origin, VertexNode end){
 		Line line = new Line();
 		Text label = new Text(String.valueOf(arc.getDistance()));
 		
-		Pane stack = new Pane();
+		ArcNode stack = new ArcNode();
 		stack.getChildren().add(line);
 		stack.getChildren().add(label);
 		
@@ -250,7 +268,7 @@ public class FormController {
 		}
 	}
 	
-	private void configureVertex(StackPane stack){
+	private void configureVertex(VertexNode stack){
 		Circle circle = (Circle)stack.getChildren().get(0);
 		Text text = (Text)stack.getChildren().get(1);
 		
@@ -286,12 +304,8 @@ public class FormController {
 			public void handle(MouseEvent e){
 				if(!originSelect && !endSelect){
 					if(e.getClickCount() >= 2){
-						pnlVertex.setVisible(true);
-						pnlArc.setVisible(false);
-						pnlInfo.setVisible(true);
-						
-						txtVertexDescVal.setText(text.getText());
-						// llenar lista de arcos
+						selectedVertex = stack;
+						showVertexInfo(stack);
 					}
 				}
 				
@@ -348,7 +362,15 @@ public class FormController {
 		});
 	}
 	
-	private void configureArc(Pane stack, StackPane origin, StackPane end){
+	private void configureArc(ArcNode stack, VertexNode origin, VertexNode end){
+		origin.getArcs().add(stack);
+		
+		if(!origin.equals(end))
+			end.getArcs().add(stack);
+		
+		stack.setOriginNode(origin);
+		stack.setEndNode(end);
+		
 		Circle originCircle = (Circle)origin.getChildren().get(0);
 		Circle endCircle = (Circle)end.getChildren().get(0);
 		
@@ -361,10 +383,21 @@ public class FormController {
 		originCircle.setFill(Color.GREEN);
 		endCircle.setFill(Color.GREEN);
 		
+		line.setCursor(Cursor.HAND);
 		line.setStroke(Color.DARKGOLDENROD);
 		line.setStrokeWidth(2);
 		line.setStrokeLineCap(StrokeLineCap.ROUND);
 		line.getStrokeDashArray().setAll(10.0, 5.0);
+		line.setOnMousePressed(new EventHandler<MouseEvent>(){
+			public void handle(MouseEvent e){
+				if(!originSelect && !endSelect){
+					if(e.getClickCount() >= 2){
+						selectedArc = stack;
+						showArcInfo(stack);
+					}
+				}
+			}
+		});
 		
 		line.startXProperty().bind(origin.translateXProperty().add(originCircle.layoutXProperty()));
 		line.startYProperty().bind(origin.translateYProperty().add(originCircle.layoutYProperty()));
@@ -400,14 +433,14 @@ public class FormController {
 		line.endYProperty().addListener(endChange);
 	}
 	
-	private double calcHipotenusa(StackPane origin, StackPane end){
+	private double calcHipotenusa(VertexNode origin, VertexNode end){
 		double cateto1 = end.translateXProperty().doubleValue() - origin.translateXProperty().doubleValue();
 		double cateto2 = end.translateYProperty().doubleValue() - origin.translateYProperty().doubleValue();
 		double hipotenusa = Math.sqrt(Math.pow(cateto1, 2) + Math.pow(cateto2, 2));
 		return hipotenusa;
 	}
 	
-	private double calcAngle(StackPane origin, StackPane end){
+	private double calcAngle(VertexNode origin, VertexNode end){
 		double angle = Math.atan2(
 				origin.translateYProperty().doubleValue() - end.translateYProperty().doubleValue(),
 				origin.translateXProperty().doubleValue() - end.translateXProperty().doubleValue()
@@ -422,6 +455,30 @@ public class FormController {
 
 	// ---------------------
 	
+	private void showVertexInfo(VertexNode node){
+		pnlVertex.setVisible(true);
+		pnlArc.setVisible(false);
+		pnlInfo.setVisible(true);
+		
+		txtVertexDescVal.setText(node.getTextNode().getText());
+		
+		lstArcs.getItems().clear();
+		node.getArcs().forEach(a -> lstArcs.getItems().add(a));
+	}
+	
+	private void showArcInfo(ArcNode node){
+		selectedArc = node;
+		
+		pnlVertex.setVisible(false);
+		pnlArc.setVisible(true);
+		pnlInfo.setVisible(true);
+		
+		txtArcDistanceDesc.setText(node.getTextNode().getText());
+		
+		shortcutOrigin.setText(node.getOriginNode().getTextNode().getText());
+		shortcutEnd.setText(node.getEndNode().getTextNode().getText());
+	}
+	
 	@FXML
 	private void hideInfoPanel(){
 		pnlInfo.setVisible(false);
@@ -429,82 +486,88 @@ public class FormController {
 	
 	@FXML
 	private void applyVertexChanges(KeyEvent e){
-		
+		if(selectedVertex != null){
+			String newValue = txtVertexDescVal.getText();
+			selectedVertex.getTextNode().setText(newValue);
+			
+			// update in db
+		}
 	}
 	
 	@FXML
 	private void deleteVertex(){
 		if(selectedVertex != null){
 			Text text = (Text)selectedVertex.getChildren().get(1);
-			gestor.deleteVertex(text.getText());
+			gestor.deleteVertex(selectedVertex.getIdVertex(), text.getText());
 			pGroup.getChildren().remove(selectedVertex);
+			selectedVertex = null;
+			lstArcs.getItems().clear();
+			hideInfoPanel();
 		}
 	}
 	
 	@FXML
 	private void clearArcs(){
+		lstArcs.getItems().forEach(a -> {
+			a.getOriginNode().getArcs().remove(a);
+			a.getEndNode().getArcs().remove(a);
+			pGroup.getChildren().remove(a);
+			gestor.deleteArc(
+					a.getIdArc(), 
+					a.getOriginNode().getTextNode().getText(), 
+					a.getEndNode().getTextNode().getText()
+				);
+		});
 		
+		lstArcs.getItems().clear();
 	}
 	
 	@FXML
-	private void gotoArc(){
-		
+	private void gotoArc(MouseEvent e){
+		if(e.getClickCount() >= 2){
+			ArcNode arc = lstArcs.getSelectionModel().getSelectedItem();
+			
+			if(arc != null)
+				showArcInfo(arc);
+		}
 	}
 	
 	@FXML
 	private void applyDistance(KeyEvent e){
-		
+		if(selectedArc != null){
+			String newValue = txtArcDistanceDesc.getText();
+			selectedArc.getTextNode().setText(newValue);
+			
+			// update in db
+		}
 	}
 	
 	@FXML
 	private void gotoOrigin(){
-		
+		showVertexInfo(selectedArc.getOriginNode());
 	}
 	
 	@FXML
 	private void gotoEnd(){
-		
+		showVertexInfo(selectedArc.getEndNode());
 	}
 	
 	@FXML
 	private void deleteArc(){
 		if(selectedArc != null){
-			/*Text text = (Text)selectedArc.getChildren().get(1);
-			gestor.deleteArc(text.getText());
-			pGroup.getChildren().remove(selectedVertex);*/
+			gestor.deleteArc(
+					selectedArc.getIdArc(),
+					selectedArc.getOriginNode().getTextNode().getText(), 
+					selectedArc.getEndNode().getTextNode().getText()
+				);
+			pGroup.getChildren().remove(selectedArc);
+			
+			selectedArc.getOriginNode().getArcs().remove(selectedArc);
+			selectedArc.getEndNode().getArcs().remove(selectedArc);
+			
+			selectedArc = null;
+			hideInfoPanel();
 		}
 	}
 	
-	private static class ListArc{
-		private StackPane origin;
-		private StackPane end;
-		
-		public ListArc(StackPane origin, StackPane end){
-			this.origin = origin;
-			this.end = end;
-		}
-		
-		public StackPane getOrigin(){
-			return origin;
-		}
-		
-		public void setOrigin(StackPane origin){
-			this.origin = origin;
-		}
-		
-		public StackPane getEnd(){
-			return end;
-		}
-		
-		public void setEnd(StackPane end){
-			this.end = end;
-		}
-		
-		public String toString(){
-			Text textOrigin = (Text)origin.getChildren().get(1);
-			Text textEnd = (Text)end.getChildren().get(1);
-			
-			return textOrigin.getText() + " -> " + textEnd.getText();
-		}
-	}
 }
