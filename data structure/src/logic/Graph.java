@@ -8,7 +8,7 @@ public class Graph {
 	private Vertex vertex[];
 	private Arc arc[][];
 	boolean[] vertexVisited;
-	int[] distances;
+	double[] distances;
 	
 	public Graph() {
 		vertex = new Vertex[MAX_VERTEX];
@@ -141,43 +141,102 @@ public class Graph {
 	
 	public void shortestPath(String origin) {
 		int[] lastVisited = new int[MAX_VERTEX];
-		distances = new int[MAX_VERTEX];
-		vertexVisited = new boolean[MAX_VERTEX];
 		int indexOrigin = searchIndex(origin);
+		double valueCompare;
+		distances = new double[MAX_VERTEX];
+		vertexVisited = new boolean[MAX_VERTEX];		
 		
 		for (int i = 0; i < MAX_VERTEX; i++) {
 			vertexVisited[i] = false;
-			distances[i] = (int)arc[indexOrigin][i].getDistance();
+			
+			if (arc[indexOrigin][i] == null)
+				distances[i] = 9999;
+			else
+				distances[i] = arc[indexOrigin][i].getDistance();
+			
 			lastVisited[i] = indexOrigin;
 		}
 		
+		distances[indexOrigin] = 0;
+		vertexVisited[indexOrigin] = true;
+		
 		for (int i = 0; i < MAX_VERTEX; i++) {
-			int v = calcMinimun();
+			int indexMinDistance = calcMinimun();		
+			vertexVisited[indexMinDistance] = true;
 			
-			vertexVisited[i] = true;
-			
-			/*for (int j = 0; j < MAX_VERTEX; j++) {
-				if (!vertexVisited[i]) {
-					if ((distances[v] + arc[v][j].getDistance()) < distances[j]) {
-						distances[j] = distances[v] + arc[v][j].getDistance();
-						lastVisited[j] = v;
+			for (int j = 0; j < MAX_VERTEX; j++) {
+				if (!vertexVisited[j]) {
+					if (arc[indexMinDistance][j] == null)
+						valueCompare = 9999;
+					else 
+						valueCompare = distances[indexMinDistance] + arc[indexMinDistance][j].getDistance();
+					
+					if (valueCompare < distances[j]) {
+						distances[j] = distances[indexMinDistance] + arc[indexMinDistance][j].getDistance();
+						lastVisited[j] = indexMinDistance;
 					}
 				}
-			}*/
+			}
+		}
+		
+		for (int i = 0; i < MAX_VERTEX; i++) {
+			System.out.println("Costo mínimo a " + i + ": " + distances[i]);
 		}
 	}
 	
+	public void shortestPath(String origin, String destination) {
+		int[] lastVisited = new int[MAX_VERTEX];
+		int indexOrigin = searchIndex(origin);
+		int indexDestination = searchIndex(destination);
+		double valueCompare;
+		distances = new double[MAX_VERTEX];
+		vertexVisited = new boolean[MAX_VERTEX];		
+		
+		for (int i = 0; i < MAX_VERTEX; i++) {
+			vertexVisited[i] = false;
+			
+			if (arc[indexOrigin][i] == null)
+				distances[i] = 9999;
+			else
+				distances[i] = arc[indexOrigin][i].getDistance();
+			
+			lastVisited[i] = indexOrigin;
+		}
+		
+		distances[indexOrigin] = 0;
+		vertexVisited[indexOrigin] = true;
+		
+		for (int i = 0; i < MAX_VERTEX; i++) {
+			int indexMinDistance = calcMinimun();		
+			vertexVisited[indexMinDistance] = true;
+			
+			if (!vertexVisited[indexDestination]) {
+				if (arc[indexMinDistance][indexDestination] == null)
+					valueCompare = 9999;
+				else 
+					valueCompare = distances[indexMinDistance] + arc[indexMinDistance][indexDestination].getDistance();
+				
+				if (valueCompare < distances[indexDestination]) {
+					distances[indexDestination] = distances[indexMinDistance] + arc[indexMinDistance][indexDestination].getDistance();
+					lastVisited[indexDestination] = indexMinDistance;
+				}
+			}
+		}
+		
+		System.out.println("Costo mínimo a " + destination + ": " + distances[indexDestination]);
+	}
+	
 	private int calcMinimun() {
-		int max = 9999;
-		int index = 1;
-		/*
-		for (int i = 0; i < n; i++) {
+		double max = 9999;
+		int indexMinDistance = 1;
+		
+		for (int i = 0; i < MAX_VERTEX; i++) {
 			if (!vertexVisited[i] && (distances[i] <= max)) {
 				max = distances[i];
-				index = i;
+				indexMinDistance = i;
 			}
-		} */
-		return index;
+		}
+		return indexMinDistance ;
 	}
 	
 	/**
