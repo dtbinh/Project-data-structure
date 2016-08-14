@@ -8,7 +8,7 @@ import db.Querys;
 
 public class Management {
 	private Graph graph;
-	private static boolean showSQL = true;
+	private static boolean showSQL = false;
 	
 	public void initialize () {
 		graph = new Graph();
@@ -29,20 +29,18 @@ public class Management {
 			ResultSet arcResults = executeQuery(Querys.GET_ALL_ARC);
 			
 			while(arcResults.next()){
-				
-				
-				/*graph.insertArc(
+				graph.insertArc(
 						arcResults.getInt("id"), 
-						arcResults.getInt("distance"), 
-						arcResults.getInt("origin"), 
-						arcResults.getInt("end"));*/
+						arcResults.getString("origin"), 
+						arcResults.getString("end"),
+						arcResults.getInt("distance"));
 			}
 		}catch(Exception e){ e.printStackTrace(); }
-		
-		graph.fillHash();
 	}
 	
-	public void insertVertex(String name, int positionX, int positionY) {
+	public int insertVertex(String name, int positionX, int positionY) {
+		int vertexId = 0;
+		
 		try{
 			String[] params = new String[]{
 				":name='"+name+"'",
@@ -51,13 +49,15 @@ public class Management {
 			};
 			executeQuery(Querys.CREATE_VERTEX, params);
 			
-			int id = executeQuery(Querys.LAST_VERTEX).getInt("id");
-			graph.insertVertex(id, name, positionX, positionY);
+			vertexId = executeQuery(Querys.LAST_VERTEX).getInt("id");
+			graph.insertVertex(vertexId, name, positionX, positionY);
 		}catch(Exception e){ e.printStackTrace(); }
+		
+		return vertexId;
 	}
 	
 	public int insertArc(String origin, String destination, int distance) {
-		int result = 0;
+		int arcId = 0;
 		
 		try{
 			String[] params = new String[]{
@@ -66,11 +66,12 @@ public class Management {
 				":end="+graph.getVertexId(destination)
 			};
 			executeQuery(Querys.CREATE_ARC, params);
-			
-			result = graph.insertArc(origin, destination, distance);
+
+			arcId = executeQuery(Querys.LAST_ARC).getInt("id");
+			graph.insertArc(arcId, origin, destination, distance);
 		}catch(Exception e){ e.printStackTrace(); }
 		
-		return result;
+		return arcId;
 	}
 	
 	public boolean deleteVertex(int idVertex, String name) {	
@@ -101,26 +102,33 @@ public class Management {
 		return result;
 	}
 	
-	public void updateVertex(int id, String name){
+	public void updateVertex(String oldName, String newName){
+		Vertex vertex = graph.getVertex(oldName);
+		
 		String[] params = new String[]{
-				":id="+id,
-				":name="+name
+				":id="+vertex.getId(),
+				":name="+newName
 		};
 		
 		try{
 			executeQuery(Querys.UPDATE_VERTEX_NAME, params);
+			vertex.setName(newName);
 		}catch(Exception e){ e.printStackTrace(); }
 	}
 	
-	public void updateVertex(int id, double x, double y){
+	public void updateVertex(String name, double x, double y){
+		Vertex vertex = graph.getVertex(name);
+		
 		String[] params = new String[]{
-				":id="+id,
+				":id="+vertex.getId(),
 				":x="+x,
-				":y"+y
+				":y="+y
 		};
 		
 		try{
 			executeQuery(Querys.UPDATE_VERTEX_POS, params);
+			vertex.setPositionX(x);
+			vertex.setPositionY(y);
 		}catch(Exception e){ e.printStackTrace(); }
 	}
 	
@@ -137,6 +145,10 @@ public class Management {
 	
 	public Vertex[] getVertexs(){
 		return graph.getVertexs();
+	}
+	
+	public Arc[][] getArcs(){
+		return graph.getArcs();
 	}
 	
 	private ResultSet executeQuery(Querys query, String... params) throws SQLException, Exception{

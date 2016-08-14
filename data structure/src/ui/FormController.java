@@ -80,6 +80,17 @@ public class FormController {
 	private Label shortcutEnd;
 	
 	// ------------------------
+	private static final Color VERTEX_COL = Color.LIGHTBLUE;
+	private static final Color ARC_COL = Color.DARKGOLDENROD;
+	private static final Color ORIGIN_VERTEX_COL = Color.LIGHTGREEN;
+	private static final Color END_VERTEX_COL = Color.GREEN;
+	private static final Color DRAGGED_VERTEX_COL = Color.DARKVIOLET;
+	private static final Color SELECTED_VERTEX_COL = Color.PURPLE;
+	private static final Color SELECTED_ARC_COL = Color.DARKTURQUOISE;
+	
+	private static final Font FONT = Font.font("Arial", 16);
+	
+	// ------------------------
 	private Management gestor;
 	private boolean originSelect;
 	private boolean endSelect;
@@ -121,25 +132,18 @@ public class FormController {
 	
 	private void load(){
 		Vertex[] vertexs = gestor.getVertexs();
+		//Arc[][] arcs = gestor.getArcs();
 		
 		for(Vertex v : vertexs){
 			if(v != null){
-				StackPane stack = makeVertex(v);
+				VertexNode stack = makeVertex(v);
 				pGroup.getChildren().add(stack);
 			}
 		}
 		
-		/*Arc[][] arcs = new Arc[0][0];
-		
-		for(Arc[] relations : arcs){
-			for(Arc arc : relations){
-				if(arc != null){
-					//Pane stack = addArc(arc);
-					//pGroup.getChildren().add(stack);
-				}
-			}
-		}*/
 	}
+	
+	// -------------------
 	
 	@FXML
 	private void addVertex(Event e){
@@ -153,9 +157,9 @@ public class FormController {
 				double x = limit + Math.random() * (App.getAppWidth().doubleValue() - limit);
 				double y = limit + Math.random() * (App.getAppHeight().doubleValue() - limit);
 				
-				gestor.insertVertex(vertexVal, (int)x, (int)y);
+				int vertexId = gestor.insertVertex(vertexVal, (int)x, (int)y);
 				
-				Vertex v = new Vertex(0, vertexVal, x, y);				
+				Vertex v = new Vertex(vertexId, vertexVal, x, y);				
 				StackPane stack = makeVertex(v);
 				pGroup.getChildren().add(stack);
 		    	
@@ -169,6 +173,7 @@ public class FormController {
 		Text label = new Text(v.getName());
 		
 		VertexNode stack = new VertexNode();
+		stack.setIdVertex(v.getId());
 		stack.getChildren().add(vertex);
 		stack.getChildren().add(label);
 		
@@ -185,13 +190,13 @@ public class FormController {
 		String distance = txtArcDistance.getText();
 		
 		if(originVertex != null && endVertex != null && (distance != null && distance.length() > 0 && !distance.contains(" "))){
-			Arc arc = new Arc(Double.parseDouble(distance));
-			Pane stack = makeArc(arc, originVertex, endVertex);
-			pGroup.getChildren().add(stack);
-			
 			Text origin = (Text)originVertex.getChildren().get(1);
 			Text end = (Text)endVertex.getChildren().get(1);
-			gestor.insertArc(origin.getText(), end.getText(), Integer.parseInt(distance));
+			int arcId = gestor.insertArc(origin.getText(), end.getText(), Integer.parseInt(distance));
+			
+			Arc arc = new Arc(arcId, Double.parseDouble(distance));
+			Pane stack = makeArc(arc, originVertex, endVertex);
+			pGroup.getChildren().add(stack);
 			
 			txtArcDistance.setText("");
 			
@@ -204,6 +209,11 @@ public class FormController {
 			originSelect = false;
 			endSelect = false;
 			
+			if(originVertex.equals(selectedVertex))
+				originVertex.getCircleNode().setFill(SELECTED_VERTEX_COL);
+			else if(endVertex.equals(selectedVertex))
+					endVertex.getCircleNode().setFill(SELECTED_VERTEX_COL);
+			
 			originVertex = null;
 			endVertex = null;
 		}
@@ -214,6 +224,7 @@ public class FormController {
 		Text label = new Text(String.valueOf(arc.getDistance()));
 		
 		ArcNode stack = new ArcNode();
+		stack.setIdArc(arc.getId());
 		stack.getChildren().add(line);
 		stack.getChildren().add(label);
 		
@@ -224,18 +235,13 @@ public class FormController {
 	
 	@FXML
 	private void pickOrigin(){
-		/*if(!originSelect){
-			lblOrigin.setTextFill(Color.BLUE);
-			lblOrigin.setText("Origin vertex: [ ]");
-			originSelect = false;
-		}else{*/
 		originSelect = true;
 		endSelect = false;
 		lblOrigin.setText("Origin vertex: [?]");
 		lblOrigin.setTextFill(Color.ORANGE);
 		
 		if(originVertex != null){
-			((Circle)originVertex.getChildren().get(0)).setFill(Color.GREEN);
+			((Circle)originVertex.getChildren().get(0)).setFill(VERTEX_COL);
 			originVertex = null;
 		}
 		
@@ -247,18 +253,13 @@ public class FormController {
 	
 	@FXML
 	private void pickEnd(){
-		/*if(!endSelect){
-			lblEnd.setTextFill(Color.BLUE);
-			lblEnd.setText("End vertex: [ ]");
-			endSelect = false;
-		}else{*/
 		originSelect = false;
 		endSelect = true;
 		lblEnd.setText("End vertex: [?]");
 		lblEnd.setTextFill(Color.ORANGE);
 		
 		if(endVertex != null){
-			((Circle)endVertex.getChildren().get(0)).setFill(Color.GREEN);
+			((Circle)endVertex.getChildren().get(0)).setFill(VERTEX_COL);
 			endVertex = null;
 		}
 		
@@ -274,9 +275,9 @@ public class FormController {
 		
 		stack.toFront();
 		circle.setCursor(Cursor.HAND);
-		circle.setFill(Color.GREEN);
+		circle.setFill(VERTEX_COL);
 		circle.setStroke(Color.BLACK);
-		text.setFont(Font.font("Arial", 16));
+		text.setFont(FONT);
 		text.setMouseTransparent(true);
 		
 		stack.setOnMouseDragged(new EventHandler<MouseEvent>(){
@@ -288,22 +289,33 @@ public class FormController {
 		
 		stack.setOnMouseReleased(new EventHandler<MouseEvent>(){
 			public void handle(MouseEvent e){
-				if(!originSelect && !endSelect)
-					circle.setFill(Color.GREEN);
+				if(!stack.equals(originVertex) && !stack.equals(endVertex) && !stack.equals(selectedVertex)){
+					circle.setFill(VERTEX_COL);
+					gestor.updateVertex(stack.getTextNode().getText(), stack.translateXProperty().intValue(), stack.translateYProperty().intValue());
+				}
 			}
 		});
 		
 		circle.setOnMousePressed(new EventHandler<MouseEvent>(){
 			public void handle(MouseEvent e){
-				if(!originSelect && !endSelect)
-					circle.setFill(Color.DARKGRAY);
+				if(!stack.equals(originVertex) && !stack.equals(endVertex) && !stack.equals(selectedVertex))
+					circle.setFill(DRAGGED_VERTEX_COL);
 			}
 		});
 		
 		circle.setOnMouseClicked(new EventHandler<MouseEvent>(){
 			public void handle(MouseEvent e){
-				if(!originSelect && !endSelect){
+				if(!stack.equals(selectedVertex)){
 					if(e.getClickCount() >= 2){
+						if(selectedVertex != null){
+							if(selectedVertex.equals(originVertex))
+								selectedVertex.getCircleNode().setFill(ORIGIN_VERTEX_COL);
+							else if(selectedVertex.equals(endVertex))
+								selectedVertex.getCircleNode().setFill(END_VERTEX_COL);
+							else
+								selectedVertex.getCircleNode().setFill(VERTEX_COL);
+						}
+						
 						selectedVertex = stack;
 						showVertexInfo(stack);
 					}
@@ -311,10 +323,10 @@ public class FormController {
 				
 				if(originSelect){
 					if(originVertex == null){
-						circle.setFill(Color.LIGHTBLUE);
+						circle.setFill(ORIGIN_VERTEX_COL);
 						originVertex = stack;
 						lblOrigin.setText("Origin vertex: [" + text.getText() + "]");
-						lblOrigin.setTextFill(Color.BLUE);
+						lblOrigin.setTextFill(ORIGIN_VERTEX_COL);
 						originSelect = false;
 					}else{
 						Circle originCircle = ((Circle)originVertex.getChildren().get(0));
@@ -322,13 +334,13 @@ public class FormController {
 						if(originCircle.equals(circle)){
 							originVertex = null;
 							lblOrigin.setText("Origin vertex: [?]");
-							originCircle.setFill(Color.GREEN);
+							originCircle.setFill(VERTEX_COL);
 						}else{
-							circle.setFill(Color.LIGHTBLUE);
+							circle.setFill(ORIGIN_VERTEX_COL);
 							originVertex = stack;
 							lblOrigin.setText("Origin vertex: [" + text.getText() + "]");
-							originCircle.setFill(Color.GREEN);
-							lblOrigin.setTextFill(Color.BLUE);
+							originCircle.setFill(VERTEX_COL);
+							lblOrigin.setTextFill(ORIGIN_VERTEX_COL);
 							originSelect = false;
 						}
 					}
@@ -336,10 +348,10 @@ public class FormController {
 				
 				if(endSelect){
 					if(endVertex == null){
-						circle.setFill(Color.DARKBLUE);
+						circle.setFill(END_VERTEX_COL);
 						endVertex = stack;
 						lblEnd.setText("End vertex: [" + text.getText() + "]");
-						lblEnd.setTextFill(Color.BLUE);
+						lblEnd.setTextFill(END_VERTEX_COL);
 						endSelect = false;
 					}else{
 						Circle endCircle = ((Circle)endVertex.getChildren().get(0));
@@ -347,13 +359,13 @@ public class FormController {
 						if(endCircle.equals(circle)){
 							endVertex = null;
 							lblEnd.setText("End vertex: [?]");
-							endCircle.setFill(Color.GREEN);
+							endCircle.setFill(VERTEX_COL);
 						}else{
-							circle.setFill(Color.DARKBLUE);
+							circle.setFill(END_VERTEX_COL);
 							endVertex = stack;
 							lblEnd.setText("End vertex: [" + text.getText() + "]");
-							endCircle.setFill(Color.GREEN);
-							lblEnd.setTextFill(Color.BLUE);
+							endCircle.setFill(VERTEX_COL);
+							lblEnd.setTextFill(END_VERTEX_COL);
 							endSelect = false;
 						}
 					}
@@ -380,39 +392,28 @@ public class FormController {
 		stack.toBack();
 		stack.setMouseTransparent(true);
 		
-		originCircle.setFill(Color.GREEN);
-		endCircle.setFill(Color.GREEN);
+		originCircle.setFill(VERTEX_COL);
+		endCircle.setFill(VERTEX_COL);
 		
-		line.setCursor(Cursor.HAND);
-		line.setStroke(Color.DARKGOLDENROD);
+		line.setStroke(ARC_COL);
 		line.setStrokeWidth(2);
 		line.setStrokeLineCap(StrokeLineCap.ROUND);
 		line.getStrokeDashArray().setAll(10.0, 5.0);
-		line.setOnMousePressed(new EventHandler<MouseEvent>(){
-			public void handle(MouseEvent e){
-				if(!originSelect && !endSelect){
-					if(e.getClickCount() >= 2){
-						selectedArc = stack;
-						showArcInfo(stack);
-					}
-				}
-			}
-		});
 		
 		line.startXProperty().bind(origin.translateXProperty().add(originCircle.layoutXProperty()));
 		line.startYProperty().bind(origin.translateYProperty().add(originCircle.layoutYProperty()));
 		line.endXProperty().bind(end.translateXProperty().add(endCircle.layoutXProperty()));
 		line.endYProperty().bind(end.translateYProperty().add(endCircle.layoutYProperty()));
 		
-		text.setFont(Font.font("Arial", 16));
+		text.setFont(FONT);
 		
-		double hipotenusa = calcHipotenusa(end, origin);
+		double hypotenuse = calcHypotenuse(end, origin);
 		double angle = calcAngle(end, origin);
-		relocateText(text, end, hipotenusa, angle);
+		relocateText(text, end, hypotenuse, angle);
 		
 		ChangeListener<Number> originChange = new ChangeListener<Number>(){
 			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-				double hipotenusa = calcHipotenusa(end, origin);
+				double hipotenusa = calcHypotenuse(end, origin);
 				double angle = calcAngle(end, origin);
 				relocateText(text, end, hipotenusa, angle);
 			}
@@ -423,7 +424,7 @@ public class FormController {
 		
 		ChangeListener<Number> endChange = new ChangeListener<Number>(){
 			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-				double hipotenusa = calcHipotenusa(origin, end);
+				double hipotenusa = calcHypotenuse(origin, end);
 				double angle = calcAngle(origin, end);
 				relocateText(text, origin, hipotenusa, angle);
 			}
@@ -433,11 +434,11 @@ public class FormController {
 		line.endYProperty().addListener(endChange);
 	}
 	
-	private double calcHipotenusa(VertexNode origin, VertexNode end){
-		double cateto1 = end.translateXProperty().doubleValue() - origin.translateXProperty().doubleValue();
-		double cateto2 = end.translateYProperty().doubleValue() - origin.translateYProperty().doubleValue();
-		double hipotenusa = Math.sqrt(Math.pow(cateto1, 2) + Math.pow(cateto2, 2));
-		return hipotenusa;
+	private double calcHypotenuse(VertexNode origin, VertexNode end){
+		double hick1 = end.translateXProperty().doubleValue() - origin.translateXProperty().doubleValue();
+		double hick2 = end.translateYProperty().doubleValue() - origin.translateYProperty().doubleValue();
+		double hypotenuse = Math.sqrt(Math.pow(hick1, 2) + Math.pow(hick2, 2));
+		return hypotenuse;
 	}
 	
 	private double calcAngle(VertexNode origin, VertexNode end){
@@ -456,6 +457,11 @@ public class FormController {
 	// ---------------------
 	
 	private void showVertexInfo(VertexNode node){
+		if(selectedArc != null)
+			selectedArc.getLineNode().setStroke(ARC_COL);
+		
+		node.getCircleNode().setFill(SELECTED_VERTEX_COL);
+		
 		pnlVertex.setVisible(true);
 		pnlArc.setVisible(false);
 		pnlInfo.setVisible(true);
@@ -467,6 +473,11 @@ public class FormController {
 	}
 	
 	private void showArcInfo(ArcNode node){
+		if(selectedVertex != null)
+			selectedVertex.getCircleNode().setFill(VERTEX_COL);
+		
+		node.getLineNode().setStroke(SELECTED_ARC_COL);
+		
 		selectedArc = node;
 		
 		pnlVertex.setVisible(false);
@@ -482,15 +493,28 @@ public class FormController {
 	@FXML
 	private void hideInfoPanel(){
 		pnlInfo.setVisible(false);
+
+		if(selectedVertex != null)
+			selectedVertex.getCircleNode().setFill(VERTEX_COL);
+		
+		if(selectedArc != null)
+			selectedArc.getLineNode().setStroke(ARC_COL);
+		
+		selectedVertex = null;
+		selectedArc = null;
 	}
 	
 	@FXML
-	private void applyVertexChanges(KeyEvent e){
+	private void applyVertexChanges(){
 		if(selectedVertex != null){
 			String newValue = txtVertexDescVal.getText();
-			selectedVertex.getTextNode().setText(newValue);
 			
-			// update in db
+			System.out.println(newValue);
+			
+			if(newValue != null && newValue.length() > 0){
+				gestor.updateVertex(selectedVertex.getTextNode().getText(), newValue);
+				selectedVertex.getTextNode().setText(newValue);
+			}
 		}
 	}
 	
@@ -527,28 +551,45 @@ public class FormController {
 		if(e.getClickCount() >= 2){
 			ArcNode arc = lstArcs.getSelectionModel().getSelectedItem();
 			
-			if(arc != null)
+			if(arc != null){
+				if(selectedArc != null)
+					selectedArc.getLineNode().setStroke(ARC_COL);
+				
 				showArcInfo(arc);
+			}
 		}
 	}
 	
 	@FXML
-	private void applyDistance(KeyEvent e){
+	private void applyDistanceChanges(){
 		if(selectedArc != null){
 			String newValue = txtArcDistanceDesc.getText();
-			selectedArc.getTextNode().setText(newValue);
 			
-			// update in db
+			if(newValue != null && newValue.length() > 0){
+				try{
+					gestor.updateArc(selectedArc.getIdArc(), Integer.parseInt(newValue));
+					selectedArc.getTextNode().setText(newValue);
+				}catch(Exception ex){
+					ex.printStackTrace();
+					// notify parse error
+				}
+			}
 		}
 	}
 	
 	@FXML
 	private void gotoOrigin(){
+		if(selectedVertex != null)
+			selectedVertex.getCircleNode().setFill(VERTEX_COL);
+		
 		showVertexInfo(selectedArc.getOriginNode());
 	}
 	
 	@FXML
 	private void gotoEnd(){
+		if(selectedVertex != null)
+			selectedVertex.getCircleNode().setFill(VERTEX_COL);
+		
 		showVertexInfo(selectedArc.getEndNode());
 	}
 	
@@ -570,4 +611,15 @@ public class FormController {
 		}
 	}
 	
+	// ----------------------
+	
+	@FXML
+	private void calcMin(){
+		
+	}
+	
+	@FXML
+	private void calcMax(){
+		
+	}
 }

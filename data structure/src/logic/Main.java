@@ -15,7 +15,7 @@ public class Main {
 		graph.insertVertex(0, "2", 0, 0);
 		graph.insertVertex(0, "3", 0, 0);
 		graph.insertVertex(0, "4", 0, 0);
-		
+		/*
 		graph.insertArc("0", "1", 55);
 		graph.insertArc("0", "2", 110);
 		graph.insertArc("0", "3", 79);
@@ -27,7 +27,7 @@ public class Main {
 		graph.insertArc("2", "4", 180);
 		
 		graph.insertArc("3", "2", 89);
-		graph.insertArc("3", "4", 105);
+		graph.insertArc("3", "4", 105);*/
 		
 		printMenu();		
 	}
@@ -99,7 +99,7 @@ public class Main {
 			System.out.println("Type a distance: ");
 			distance = Integer.parseInt(br.readLine());
 			
-			result = graph.insertArc(origin, destination, distance);
+			result = graph.insertArc(0, origin, destination, distance);
 			
 			switch (result) {
 				case 1: System.out.println("Success insert!"); break; 

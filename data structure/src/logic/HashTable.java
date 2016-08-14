@@ -7,37 +7,33 @@ public class HashTable {
 		table = new HashNode[size];
 	}
 	
-	public void put(Vertex vertex){
-		int hashCode = hash(vertex.getName());
+	public void put(int index, String name){
+		int hashCode = hash(name);
 		
 		if(table[hashCode] == null)
-			table[hashCode] = new HashNode(vertex.getId(), hashCode);
+			table[hashCode] = new HashNode(index, name);
 		else{
 			HashNode temp = table[hashCode];
 			
 			while(temp.getNext() != null)
 				temp = temp.getNext();
 			
-			temp.setNext(new HashNode(vertex.getId(), hashCode));
+			temp.setNext(new HashNode(index, name));
 		}
 	}
 	
-	public int getId(String name){
-		/*int hashCode = hash(name);
+	public int getIndex(String name){
+		int hashCode = hash(name);
 		HashNode temp = table[hashCode];
 		
 		while(temp.getNext() != null){
-			if(temp.getVertex().getName().equals(name))
-				return temp.getVertex();
+			if(temp.getName().equals(name))
+				return temp.getIndex();
 			
 			temp = temp.getNext();
-		}*/
+		}
 		
-		return 0;
-	}
-	
-	public int getIndex(String name){
-		return hash(name);
+		return (temp != null? temp.getIndex() : -1);
 	}
 	
 	private int hash(String name){

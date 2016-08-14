@@ -15,6 +15,7 @@ public class Graph {
 		arc = new Arc[MAX_VERTEX][MAX_VERTEX];
 		
 		hash = new HashTable();
+		hash.init(MAX_VERTEX);
 	}
 	
 	private int searchIndex(String nameVertex) {
@@ -59,6 +60,7 @@ public class Graph {
 		for (int i = 0; i < MAX_VERTEX; i++) {
 			if (vertex[i] == null) {
 				vertex[i] = new Vertex(id, name, positionX, positionY);
+				hash.put(i, name);
 				break;
 			}
 		}
@@ -71,12 +73,12 @@ public class Graph {
 	 * @param distance
 	 * @return 4 if origin and destination not found. 3 if destination not found. 2 if origin not found. 1 if insert is success.   
 	 */
-	public int insertArc(String _origin, String _destination, int distance) {
+	public int insertArc(int id, String _origin, String _destination, int distance) {
 		int origin = searchIndex(_origin);
 		int destination = searchIndex(_destination);
 		
 		if (origin != -1 && destination != -1) {
-			arc[origin][destination] = new Arc(distance);
+			arc[origin][destination] = new Arc(id, distance);
 			return 1;
 			
 		} else if (origin == -1 && destination != -1) {
@@ -196,20 +198,19 @@ public class Graph {
 	public void fillHash() {
 		hash.init(MAX_VERTEX);
 		
-		for (Vertex v : vertex) {
-			if (v != null)
-				hash.put(v);
+		for (int i=0;i<vertex.length;i++) {
+			if (vertex[i] != null)
+				hash.put(i, vertex[i].getName());
 		}
 	}
 	
 	public int getVertexId(String name){
-		// implementar???
-		return 0;
+		Vertex v = getVertex(name);
+		return v != null? v.getId() : 0;
 	}
 	
-	public String getVertexName(int id){
-		// implementar???
-		return "";
+	public Vertex getVertex(String name){
+		return vertex[hash.getIndex(name)];
 	}
 	
 	public boolean hasPath(String originVertex, String endVertex){
@@ -219,5 +220,9 @@ public class Graph {
 	
 	public Vertex[] getVertexs(){
 		return vertex;
+	}
+
+	public Arc[][] getArcs(){
+		return arc;
 	}
 }
