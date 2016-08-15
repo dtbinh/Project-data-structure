@@ -29,8 +29,26 @@ public class Main {
 		graph.insertArc(0, "3", "2", 89);
 		graph.insertArc(0, "3", "4", 105);
 		
-		//graph.shortestPath("3");
-		graph.shortestPath("3", "2");
+
+		// Distancia mímina a cada uno de los vértices desde un determinado vértice.
+		/*double[] shortestPath = graph.shortestPath("3");
+		for (int i = 0; i < graph.getMaxVertex(); i++) {
+			if (graph.getVertexs()[i] != null) 
+				System.out.println("Distancia mínima a " + graph.getVertexs()[i].getName() + ": " + shortestPath[i]);
+		} */
+		
+		//System.out.println("Distancia mínima a 2: " + graph.shortestPath("3", "2"));
+		
+		
+		// Distancia máxima a cada uno de los vértices desde un determinado vértice.
+		/*double[] largestPath = graph.largestPath("3");
+		for (int i = 0; i < graph.getMaxVertex(); i++) {
+			if (graph.getVertexs()[i] != null) 
+				System.out.println("Distancia máxima a " + graph.getVertexs()[i].getName() + ": " + largestPath[i]);
+		} */
+		
+		//System.out.println("Distancia máxima a 2: " + graph.largestPath("3", "2"));
+		
 		
 		//printMenu();		
 	}

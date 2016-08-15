@@ -18,6 +18,10 @@ public class Graph {
 		hash.init(MAX_VERTEX);
 	}
 	
+	public static int getMaxVertex() {
+		return MAX_VERTEX;
+	}
+	
 	private int searchIndex(String nameVertex) {
 		for (int i = 0; i < MAX_VERTEX; i++) {
 			if (vertex[i] != null) {
@@ -139,7 +143,7 @@ public class Graph {
 		}		
 	}
 	
-	public void shortestPath(String origin) {
+	public double[] shortestPath(String origin) {
 		int[] lastVisited = new int[MAX_VERTEX];
 		int indexOrigin = searchIndex(origin);
 		double valueCompare;
@@ -172,19 +176,17 @@ public class Graph {
 						valueCompare = distances[indexMinDistance] + arc[indexMinDistance][j].getDistance();
 					
 					if (valueCompare < distances[j]) {
-						distances[j] = distances[indexMinDistance] + arc[indexMinDistance][j].getDistance();
+						distances[j] = valueCompare;
 						lastVisited[j] = indexMinDistance;
 					}
 				}
 			}
 		}
 		
-		for (int i = 0; i < MAX_VERTEX; i++) {
-			System.out.println("Costo mínimo a " + i + ": " + distances[i]);
-		}
+		return distances;
 	}
 	
-	public void shortestPath(String origin, String destination) {
+	public double shortestPath(String origin, String destination) {
 		int[] lastVisited = new int[MAX_VERTEX];
 		int indexOrigin = searchIndex(origin);
 		int indexDestination = searchIndex(destination);
@@ -217,13 +219,13 @@ public class Graph {
 					valueCompare = distances[indexMinDistance] + arc[indexMinDistance][indexDestination].getDistance();
 				
 				if (valueCompare < distances[indexDestination]) {
-					distances[indexDestination] = distances[indexMinDistance] + arc[indexMinDistance][indexDestination].getDistance();
+					distances[indexDestination] = valueCompare;
 					lastVisited[indexDestination] = indexMinDistance;
 				}
 			}
 		}
 		
-		System.out.println("Costo mínimo a " + destination + ": " + distances[indexDestination]);
+		return distances[indexDestination];
 	}
 	
 	private int calcMinimun() {
@@ -237,6 +239,104 @@ public class Graph {
 			}
 		}
 		return indexMinDistance ;
+	}
+	
+	public double[] largestPath(String origin) {
+		int[] lastVisited = new int[MAX_VERTEX];
+		int indexOrigin = searchIndex(origin);
+		double valueCompare;
+		distances = new double[MAX_VERTEX];
+		vertexVisited = new boolean[MAX_VERTEX];		
+		
+		for (int i = 0; i < MAX_VERTEX; i++) {
+			vertexVisited[i] = false;
+			
+			if (arc[indexOrigin][i] == null)
+				distances[i] = -1;
+			else
+				distances[i] = arc[indexOrigin][i].getDistance();
+			
+			lastVisited[i] = indexOrigin;
+		}
+		
+		distances[indexOrigin] = 0;
+		vertexVisited[indexOrigin] = true;
+		
+		for (int i = 0; i < MAX_VERTEX; i++) {
+			int indexMaxDistance = calcMaximun();		
+			vertexVisited[indexMaxDistance] = true;
+			
+			for (int j = 0; j < MAX_VERTEX; j++) {
+				if (!vertexVisited[j]) {
+					if (arc[indexMaxDistance][j] == null)
+						valueCompare = 0;
+					else 
+						valueCompare = distances[indexMaxDistance] + arc[indexMaxDistance][j].getDistance();
+					
+					if (valueCompare > distances[j]) {
+						distances[j] = valueCompare;
+						lastVisited[j] = indexMaxDistance;
+					}
+				}
+			}
+		}
+		
+		return distances;
+	}
+	
+	public double largestPath(String origin, String destination) {
+		int[] lastVisited = new int[MAX_VERTEX];
+		int indexOrigin = searchIndex(origin);
+		int indexDestination = searchIndex(destination);
+		double valueCompare;
+		distances = new double[MAX_VERTEX];
+		vertexVisited = new boolean[MAX_VERTEX];		
+		
+		for (int i = 0; i < MAX_VERTEX; i++) {
+			vertexVisited[i] = false;
+			
+			if (arc[indexOrigin][i] == null)
+				distances[i] = -1;
+			else
+				distances[i] = arc[indexOrigin][i].getDistance();
+			
+			lastVisited[i] = indexOrigin;
+		}
+		
+		distances[indexOrigin] = 0;
+		vertexVisited[indexOrigin] = true;
+		
+		for (int i = 0; i < MAX_VERTEX; i++) {
+			int indexMaxDistance = calcMaximun();		
+			vertexVisited[indexMaxDistance] = true;
+			
+			if (!vertexVisited[indexDestination]) {
+				if (arc[indexMaxDistance][indexDestination] == null)
+					valueCompare = 0;
+				else 
+					valueCompare = distances[indexMaxDistance] + arc[indexMaxDistance][indexDestination].getDistance();
+				
+				if (valueCompare > distances[indexDestination]) {
+					distances[indexDestination] = valueCompare;
+					lastVisited[indexDestination] = indexMaxDistance;
+				}
+			}
+		}
+		
+		return distances[indexDestination];
+	}
+	
+	private int calcMaximun() {
+		double min = 0;
+		int indexMaxDistance = 1;
+		
+		for (int i = 0; i < MAX_VERTEX; i++) {
+			if (!vertexVisited[i] && (distances[i] >= min)) {
+				min = distances[i];
+				indexMaxDistance = i;
+			}
+		}
+		return indexMaxDistance ;
 	}
 	
 	/**
