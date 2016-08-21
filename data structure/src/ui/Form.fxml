@@ -10,29 +10,44 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.BorderPane?>
 
-<BorderPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0" prefWidth="728.0" style="-fx-background-color: WHITE;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.FormController">
+<BorderPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0" prefWidth="728.0" style="-fx-background-color: WHITE;" stylesheets="@../resources/style.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.FormController">
    <top>
-      <FlowPane prefHeight="53.0" prefWidth="680.0" style="-fx-background-color: WHITE;" BorderPane.alignment="CENTER">
+      <FlowPane prefHeight="53.0" prefWidth="680.0" style="-fx-background-color: WHITE; -fx-border-width: 0px 0px 2px; -fx-border-color: LIGHTGRAY;" BorderPane.alignment="CENTER">
          <children>
-            <HBox spacing="20.0" style="-fx-background-color: WHITE;">
+            <HBox spacing="10.0" style="-fx-background-color: WHITE;">
                <children>
-                  <HBox spacing="10.0">
+                  <GridPane hgap="5.0" prefHeight="60.0" prefWidth="222.0">
+                    <columnConstraints>
+                      <ColumnConstraints hgrow="NEVER" maxWidth="95.0" minWidth="10.0" prefWidth="50.0" />
+                        <ColumnConstraints hgrow="NEVER" maxWidth="150.0" minWidth="10.0" prefWidth="62.0" />
+                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="197.0" minWidth="10.0" prefWidth="66.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    </rowConstraints>
                      <children>
+                        <Button mnemonicParsing="false" onMouseClicked="#addVertex" text="Add vertex" GridPane.columnIndex="2">
+                           <opaqueInsets>
+                              <Insets />
+                           </opaqueInsets>
+                        </Button>
+                        <TextField fx:id="txtVertexVal" prefHeight="25.0" prefWidth="71.0" promptText="A..Z" GridPane.columnIndex="1" />
                         <Label fx:id="lblValue" mnemonicParsing="true" text="Value:">
                            <cursor>
                               <Cursor fx:constant="HAND" />
-                           </cursor></Label>
-                        <TextField fx:id="txtVertexVal" prefHeight="25.0" prefWidth="71.0" promptText="A..Z" />
-                        <Button mnemonicParsing="false" onKeyPressed="#addVertex" onMouseClicked="#addVertex" text="Add vertex" />
+                           </cursor>
+                        </Label>
+                        <Button mnemonicParsing="false" onMouseClicked="#search" text="Search vertex" GridPane.columnIndex="2" GridPane.rowIndex="1" />
                      </children>
-                  </HBox>
-                  <GridPane hgap="5.0" prefHeight="60.0" prefWidth="426.0">
+                  </GridPane>
+                  <GridPane hgap="5.0" prefHeight="60.0" prefWidth="401.0" style="-fx-border-color: LIGHTGRAY; -fx-border-width: 0px 0px 0px 2px; -fx-padding: 0px 5px;">
                     <columnConstraints>
-                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="107.0" minWidth="10.0" prefWidth="107.0" />
-                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="91.0" minWidth="10.0" prefWidth="90.0" />
-                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="94.0" minWidth="0.0" prefWidth="50.0" />
-                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="143.0" minWidth="10.0" prefWidth="42.0" />
-                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="205.0" minWidth="10.0" prefWidth="97.0" />
+                      <ColumnConstraints hgrow="NEVER" maxWidth="107.0" minWidth="10.0" prefWidth="107.0" />
+                      <ColumnConstraints hgrow="NEVER" maxWidth="91.0" minWidth="10.0" prefWidth="90.0" />
+                        <ColumnConstraints hgrow="NEVER" maxWidth="94.0" minWidth="0.0" prefWidth="69.0" />
+                        <ColumnConstraints hgrow="NEVER" maxWidth="143.0" minWidth="9.0" prefWidth="41.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="205.0" minWidth="10.0" prefWidth="60.0" />
                     </columnConstraints>
                     <rowConstraints>
                       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
@@ -57,6 +72,7 @@
                         <Button mnemonicParsing="false" onMouseClicked="#calcMax" text="Calc. Max" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                      </children>
                   </GridPane>
+                  <Button id="info-button" mnemonicParsing="false" onMouseClicked="#showInfo" />
                </children>
                <FlowPane.margin>
                   <Insets left="10.0" />
@@ -69,7 +85,15 @@
       </FlowPane>
    </top>
    <center>
-      <Group fx:id="pGroup" BorderPane.alignment="CENTER" />
+      <ScrollPane id="scroll-style" prefViewportHeight="420.0" prefViewportWidth="521.0" style="-fx-background-color: LIGHTBLUE;">
+         <content>
+            <Pane id="pane-style">
+               <children>
+                  <Group fx:id="pGroup" layoutX="261.0" layoutY="271.0" BorderPane.alignment="CENTER" />
+               </children>
+            </Pane>
+         </content>
+      </ScrollPane>
    </center>
    <right>
       <StackPane fx:id="pnlInfo" style="-fx-border-color: LIGHTGRAY; -fx-border-width: 0px 0px 0px 2px; -fx-background-color: WHITE;" visible="false">
@@ -87,7 +111,7 @@
                     </rowConstraints>
                      <children>
                         <Label text="Node:" />
-                        <TextField fx:id="txtVertexDescVal" onKeyPressed="#applyVertexChanges" GridPane.columnIndex="1" />
+                        <TextField fx:id="txtVertexDescVal" onInputMethodTextChanged="#applyVertexChanges" GridPane.columnIndex="1" />
                         <Button mnemonicParsing="false" onMouseClicked="#deleteVertex" text="Delete vertex" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" />
                         <Button mnemonicParsing="false" onMouseClicked="#clearArcs" text="Clear arcs" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" />
                      </children>
@@ -129,7 +153,7 @@
                     </rowConstraints>
                      <children>
                         <Label text="Distance:" />
-                        <TextField fx:id="txtArcDistanceDesc" alignment="CENTER_RIGHT" onKeyReleased="#applyDistanceChanges" promptText="0.0" GridPane.columnIndex="1" />
+                        <TextField fx:id="txtArcDistanceDesc" alignment="CENTER_RIGHT" onInputMethodTextChanged="#applyDistanceChanges" promptText="0.0" GridPane.columnIndex="1" />
                         <Label text="Origin:" GridPane.rowIndex="1" />
                         <Label text="End:" GridPane.rowIndex="2" />
                         <Label fx:id="shortcutOrigin" onMouseClicked="#gotoOrigin" text="[origin]" textAlignment="CENTER" textFill="#1c00ff" underline="true" GridPane.columnIndex="1" GridPane.rowIndex="1">

@@ -107,7 +107,7 @@ public class Management {
 		
 		String[] params = new String[]{
 				":id="+vertex.getId(),
-				":name="+newName
+				":name='"+newName+"'"
 		};
 		
 		try{

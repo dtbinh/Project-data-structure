@@ -1,5 +1,10 @@
 package ui;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -8,6 +13,8 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
@@ -31,7 +38,7 @@ import logic.Vertex;
 
 public class FormController {
 	
-	public static final double RADIUS = 25d;
+	public static final double RADIUS = 15d;
 
 	@FXML
 	private Group pGroup;
@@ -80,7 +87,7 @@ public class FormController {
 	private Label shortcutEnd;
 	
 	// ------------------------
-	private static final Color VERTEX_COL = Color.LIGHTBLUE;
+	private static final Color VERTEX_COL = Color.BLUE;
 	private static final Color ARC_COL = Color.DARKGOLDENROD;
 	private static final Color ORIGIN_VERTEX_COL = Color.LIGHTGREEN;
 	private static final Color END_VERTEX_COL = Color.GREEN;
@@ -131,16 +138,48 @@ public class FormController {
 	}
 	
 	private void load(){
+		Map<String, VertexNode> nodes = new HashMap<>();
 		Vertex[] vertexs = gestor.getVertexs();
-		//Arc[][] arcs = gestor.getArcs();
 		
 		for(Vertex v : vertexs){
 			if(v != null){
 				VertexNode stack = makeVertex(v);
 				pGroup.getChildren().add(stack);
+				
+				nodes.put(stack.getTextNode().getText(), stack);
 			}
 		}
 		
+		List<String> arcs = new ArrayList<>();
+		double distance;
+		int i = 0;
+		
+		while(i < arcs.size() - 2){
+			if(i == 0)
+				distance = Double.parseDouble(arcs.get(0));
+			
+			VertexNode origin = nodes.get(arcs.get(++i));
+			VertexNode end = nodes.get(++i);
+			
+			ArcNode arc = new ArcNode();
+			arc.setOriginNode(origin);
+			arc.setEndNode(end);
+			arc.getTextNode().setText("0.0?");
+			
+			origin.getArcs().add(arc);
+			
+			if(!end.equals(origin))
+				end.getArcs().add(arc);	
+		}
+	}
+	
+	@FXML
+	private void showInfo(){
+		Alert dialog = new Alert(AlertType.INFORMATION);
+		dialog.setTitle("Info");
+		dialog.setHeaderText("Data structure 2 project");
+		dialog.setContentText("Developers:\nEmmanuel García - Ernesto Méndez\nVersion: 1.0 | 21-08-2016");
+		dialog.show();
 	}
 	
 	// -------------------
@@ -153,13 +192,13 @@ public class FormController {
 			String vertexVal = txtVertexVal.getText();
 			
 			if(vertexVal.length() > 0 && !vertexVal.contains(" ")){
-				double limit = RADIUS * 2;
+				double limit = RADIUS * 2 + (vertexVal.length() >= 3? 8 : (vertexVal.length() == 2? 4 : 0));
 				double x = limit + Math.random() * (App.getAppWidth().doubleValue() - limit);
 				double y = limit + Math.random() * (App.getAppHeight().doubleValue() - limit);
 				
 				int vertexId = gestor.insertVertex(vertexVal, (int)x, (int)y);
 				
-				Vertex v = new Vertex(vertexId, vertexVal, x, y);				
+				Vertex v = new Vertex(vertexId, (vertexVal.length() > 3? vertexVal.substring(0, 3) : vertexVal), x, y);				
 				StackPane stack = makeVertex(v);
 				pGroup.getChildren().add(stack);
 		    	
@@ -509,8 +548,6 @@ public class FormController {
 		if(selectedVertex != null){
 			String newValue = txtVertexDescVal.getText();
 			
-			System.out.println(newValue);
-			
 			if(newValue != null && newValue.length() > 0){
 				gestor.updateVertex(selectedVertex.getTextNode().getText(), newValue);
 				selectedVertex.getTextNode().setText(newValue);
@@ -612,6 +649,11 @@ public class FormController {
 	}
 	
 	// ----------------------
+	
+	@FXML
+	private void search(){
+		
+	}
 	
 	@FXML
 	private void calcMin(){
