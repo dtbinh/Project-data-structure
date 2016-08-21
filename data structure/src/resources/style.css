@@ -1,0 +1,30 @@
+#pane-style {
+	-fx-background-color: LIGHTBLUE;
+	-fx-background-image: url('map.png');
+	-fx-background-size: 1500px 750px;
+	
+	-fx-border-color: LIGHTGRAY;
+	-fx-border-width: 2px 2px 0px 0px;
+	
+	-fx-pref-width: 1500px;
+	-fx-pref-height: 750px;
+}
+
+#scroll-style > .viewport {
+   -fx-background-color: LIGHTBLUE;
+}
+
+#scroll-style {
+   -fx-background-color: LIGHTBLUE;
+}
+
+.button {
+	-fx-pref-width: 90px;
+}
+
+#info-button {
+	-fx-background-image: url('info.png');
+	-fx-pref-width: 24px;
+	-fx-pref-height: 16px;
+	-fx-background-size: stretch;
+}
