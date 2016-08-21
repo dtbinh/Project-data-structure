@@ -3,11 +3,12 @@ package logic;
 import java.util.ArrayList;
 
 public class Graph {
-	static final int MAX_VERTEX = 20;
+	static final int MAX_VERTEX = 9;
 	private HashTable hash;
 	private Vertex vertex[];
 	private Arc arc[][];
-	boolean[] vertexVisited;
+	private String[] vertexVisited;
+	Vertex[] vertexNotVisited;
 	double[] distances;
 	
 	public Graph() {
@@ -144,6 +145,45 @@ public class Graph {
 	}
 	
 	public double[] shortestPath(String origin) {
+		int indexOrigin = searchIndex(origin);
+		vertexNotVisited = getVertexs();
+		int indexMinDistance;
+		distances = new double[MAX_VERTEX];
+		vertexVisited = new String[MAX_VERTEX];		
+		
+		for (int i = 0; i < MAX_VERTEX; i++) {
+			if (arc[indexOrigin][i] == null)
+				distances[i] = 9999;
+			else
+				distances[i] = arc[indexOrigin][i].getDistance();
+		}
+		
+		distances[indexOrigin] = 0;
+		vertexVisited[0] = searchVertex(indexOrigin).getName();
+		vertexNotVisited[0] = null;
+
+		for (int i = 0; i < MAX_VERTEX; i++) {
+			indexMinDistance = searchPathMinimun();
+			
+			if (searchVertex(indexMinDistance) != null)
+				vertexVisited[i+1] = searchVertex(indexMinDistance).getName();
+				
+			vertexNotVisited[indexMinDistance] = null;
+			
+			for (int j = 0; j < MAX_VERTEX; j++) {
+				distances[j] = calcMinimun(distances[j], distances[indexMinDistance] + 
+						(arc[indexMinDistance][j] == null ? 9999 : arc[indexMinDistance][j].getDistance()));
+			}
+		}
+		
+		for (int i = 0; i < getMaxVertex(); i++) {
+				System.out.println("la distancia a " + i + " es " + distances[i]);
+		} 
+		
+		return distances;
+	}
+	/*
+	public double[] shortestPath(String origin) {
 		int[] lastVisited = new int[MAX_VERTEX];
 		int indexOrigin = searchIndex(origin);
 		double valueCompare;
@@ -169,23 +209,39 @@ public class Graph {
 			vertexVisited[indexMinDistance] = true;
 			
 			for (int j = 0; j < MAX_VERTEX; j++) {
-				if (!vertexVisited[j]) {
-					if (arc[indexMinDistance][j] == null)
-						valueCompare = 9999;
-					else 
-						valueCompare = distances[indexMinDistance] + arc[indexMinDistance][j].getDistance();
+				valueCompare = arc[indexMinDistance][j] == null ? 9999 : arc[indexMinDistance][j].getDistance();
+				
+				if (!vertexVisited[j] && valueCompare > 0 && distances[indexMinDistance] != 9999 && 
+							distances[indexMinDistance] + valueCompare < distances[j]) {
+					distances[j] = distances[indexMinDistance] + valueCompare; 
+					
+					valueCompare = distances[indexMinDistance] + (arc[indexMinDistance][j] == null ? 9999 : arc[indexMinDistance][j].getDistance());
 					
 					if (valueCompare < distances[j]) {
 						distances[j] = valueCompare;
 						lastVisited[j] = indexMinDistance;
-					}
+					} 
 				}
 			}
 		}
 		
 		return distances;
 	}
+	*//*
+	private int calcMinimun() { 
+		double min = 0;
+		int indexMaxDistance = 1;
+		
+		for (int i = 0; i < MAX_VERTEX; i++) {
+			if (!vertexVisited[i] && distances[i] <= min) {
+				min = distances[i];
+				indexMaxDistance = i;
+			}
+		}
+		return indexMaxDistance ;
+	} */
 	
+	/*
 	public double shortestPath(String origin, String destination) {
 		int[] lastVisited = new int[MAX_VERTEX];
 		int indexOrigin = searchIndex(origin);
@@ -227,13 +283,13 @@ public class Graph {
 		
 		return distances[indexDestination];
 	}
-	
-	private int calcMinimun() {
+	*/
+	private int searchPathMinimun() {
 		double max = 9999;
 		int indexMinDistance = 1;
 		
 		for (int i = 0; i < MAX_VERTEX; i++) {
-			if (!vertexVisited[i] && (distances[i] <= max)) {
+			if (vertexNotVisited[i] != null && distances[i] <= max) {
 				max = distances[i];
 				indexMinDistance = i;
 			}
@@ -241,6 +297,11 @@ public class Graph {
 		return indexMinDistance ;
 	}
 	
+	private double calcMinimun(double distance1, double distance2) {
+		return distance1 <= distance2 ? distance1 : distance2;
+	}
+	
+	/*
 	public double[] largestPath(String origin) {
 		int[] lastVisited = new int[MAX_VERTEX];
 		int indexOrigin = searchIndex(origin);
@@ -326,7 +387,7 @@ public class Graph {
 		return distances[indexDestination];
 	}
 	
-	private int calcMaximun() {
+	private int calcMaximun() { 
 		double min = 0;
 		int indexMaxDistance = 1;
 		
@@ -338,7 +399,7 @@ public class Graph {
 		}
 		return indexMaxDistance ;
 	}
-	
+	*/
 	/**
 	 * Linear path for test
 	 */
@@ -365,7 +426,7 @@ public class Graph {
 	
 	public int getVertexId(String name){
 		Vertex v = getVertex(name);
-		return v != null? v.getId() : 0;
+		return v != null? v.getId() : -1;
 	}
 	
 	public Vertex getVertex(String name){

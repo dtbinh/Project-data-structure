@@ -15,24 +15,38 @@ public class Main {
 		graph.insertVertex(0, "2", 0, 0);
 		graph.insertVertex(0, "3", 0, 0);
 		graph.insertVertex(0, "4", 0, 0);
+		graph.insertVertex(0, "5", 0, 0);
+		graph.insertVertex(0, "6", 0, 0);
+		graph.insertVertex(0, "7", 0, 0);
+		graph.insertVertex(0, "8", 0, 0);
 		
 		graph.insertArc(0, "0", "1", 55);
 		graph.insertArc(0, "0", "2", 110);
 		graph.insertArc(0, "0", "3", 79);
-		
+				
 		graph.insertArc(0, "1", "3", 70);
+		graph.insertArc(0, "1", "5", 50);
 		
-		graph.insertArc(0, "2", "0", 123);
 		graph.insertArc(0, "2", "3", 40);
 		graph.insertArc(0, "2", "4", 180);
+		graph.insertArc(0, "2", "0", 55);
 		
-		graph.insertArc(0, "3", "2", 89);
 		graph.insertArc(0, "3", "4", 105);
+		graph.insertArc(0, "3", "8", 33);
 		
+		graph.insertArc(0, "4", "6", 56);
+		graph.insertArc(0, "4", "7", 65);
+		
+		graph.insertArc(0, "5", "4", 85);
+		
+		graph.insertArc(0, "6", "7", 88);
+		graph.insertArc(0, "6", "5", 25);
+		
+		graph.insertArc(0, "7", "8", 44);		
 
 		// Distancia mímina a cada uno de los vértices desde un determinado vértice.
-		/*double[] shortestPath = graph.shortestPath("3");
-		for (int i = 0; i < graph.getMaxVertex(); i++) {
+		double[] shortestPath = graph.shortestPath("0");
+/*		for (int i = 0; i < graph.getMaxVertex(); i++) {
 			if (graph.getVertexs()[i] != null) 
 				System.out.println("Distancia mínima a " + graph.getVertexs()[i].getName() + ": " + shortestPath[i]);
 		} */
