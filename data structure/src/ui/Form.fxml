@@ -41,12 +41,10 @@
                         <Button mnemonicParsing="false" onMouseClicked="#search" text="Search vertex" GridPane.columnIndex="2" GridPane.rowIndex="1" />
                      </children>
                   </GridPane>
-                  <GridPane hgap="5.0" prefHeight="60.0" prefWidth="401.0" style="-fx-border-color: LIGHTGRAY; -fx-border-width: 0px 0px 0px 2px; -fx-padding: 0px 5px;">
+                  <GridPane hgap="5.0" prefHeight="60.0" prefWidth="286.0" style="-fx-border-color: LIGHTGRAY; -fx-border-width: 0px 0px 0px 2px; -fx-padding: 0px 5px;">
                     <columnConstraints>
                       <ColumnConstraints hgrow="NEVER" maxWidth="107.0" minWidth="10.0" prefWidth="107.0" />
                       <ColumnConstraints hgrow="NEVER" maxWidth="91.0" minWidth="10.0" prefWidth="90.0" />
-                        <ColumnConstraints hgrow="NEVER" maxWidth="94.0" minWidth="0.0" prefWidth="69.0" />
-                        <ColumnConstraints hgrow="NEVER" maxWidth="143.0" minWidth="9.0" prefWidth="41.0" />
                         <ColumnConstraints hgrow="SOMETIMES" maxWidth="205.0" minWidth="10.0" prefWidth="60.0" />
                     </columnConstraints>
                     <rowConstraints>
@@ -62,12 +60,7 @@
                            <cursor>
                               <Cursor fx:constant="HAND" />
                            </cursor></Label>
-                        <Label fx:id="lblDistance" mnemonicParsing="true" text="Distance:" GridPane.columnIndex="2">
-                           <cursor>
-                              <Cursor fx:constant="HAND" />
-                           </cursor></Label>
-                        <TextField fx:id="txtArcDistance" alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="71.0" promptText="0.0" GridPane.columnIndex="3" />
-                        <Button mnemonicParsing="false" onKeyPressed="#addArc" onMouseClicked="#addArc" text="Add arc" GridPane.columnIndex="4" />
+                        <Button mnemonicParsing="false" onKeyPressed="#addArc" onMouseClicked="#addArc" text="Add arc" GridPane.columnIndex="2" />
                         <Button mnemonicParsing="false" onMouseClicked="#calcMin" text="Calc. Min" GridPane.rowIndex="1" />
                         <Button mnemonicParsing="false" onMouseClicked="#calcMax" text="Calc. Max" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                      </children>

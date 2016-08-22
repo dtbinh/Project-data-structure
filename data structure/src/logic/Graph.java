@@ -45,13 +45,17 @@ public class Graph {
 		return vertex[index];
 	}
 	
+	public List<Arc> searchArcs(String vertexVal) {
+		return searchArcs(searchIndex(vertexVal));
+	}
+	
 	/**
 	 * 
 	 * @param index
 	 * @return
 	 */
-	public ArrayList<Arc> searchArcs(int index) {
-		ArrayList<Arc> arcs = new ArrayList();
+	public List<Arc> searchArcs(int index) {
+		List<Arc> arcs = new ArrayList<>();
 		
 		for (int i = 0; i < MAX_VERTEX; i++) {
 			if (arc[index][i] != null) {
@@ -443,8 +447,19 @@ public class Graph {
 		return vertex;
 	}
 
-	public Arc[][] getArcs(){
-		return arc;
+	public List<String> getArcs(){
+		List<String> arcs = new ArrayList<>();
+		
+		for(int i=0;i<MAX_VERTEX;i++){
+			for(int j=0;j<MAX_VERTEX;j++){
+				if(arc[i][j] != null){
+					String data = vertex[i].getName() + "," + vertex[j].getName() + "," + arc[i][j].getDistance() + "," + arc[i][j].getId();
+					arcs.add(data);
+				}
+			}
+		}
+		
+		return arcs;
 	}
 
 	public List<String> recursive(String origen, String destino){

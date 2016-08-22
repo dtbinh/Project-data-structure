@@ -13,6 +13,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Label;
@@ -23,6 +24,8 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
@@ -47,9 +50,6 @@ public class FormController {
 	private TextField txtVertexVal;
 
 	@FXML
-	private TextField txtArcDistance;
-
-	@FXML
 	private Label lblValue;
 	
 	@FXML
@@ -57,9 +57,6 @@ public class FormController {
 	
 	@FXML
 	private Label lblEnd;
-
-	@FXML
-	private Label lblDistance;
 
 	// ------------------------
 	@FXML
@@ -93,11 +90,13 @@ public class FormController {
 	private static final Color END_VERTEX_COL = Color.GREEN;
 	private static final Color DRAGGED_VERTEX_COL = Color.DARKVIOLET;
 	private static final Color SELECTED_VERTEX_COL = Color.PURPLE;
-	private static final Color SELECTED_ARC_COL = Color.DARKTURQUOISE;
+	private static final Color SELECTED_ARC_COL = Color.DARKVIOLET;
 	
 	private static final Font FONT = Font.font("Arial", 16);
 	
 	// ------------------------
+	private Map<String, VertexNode> nodes;
+	private List<Node> selectedNodes;
 	private Management gestor;
 	private boolean originSelect;
 	private boolean endSelect;
@@ -109,19 +108,30 @@ public class FormController {
 	@FXML
 	private void initialize(){
 		gestor = new Management();
-		
-		lblValue.setLabelFor(txtVertexVal);
-		lblDistance.setLabelFor(txtArcDistance);
+		nodes = new HashMap<>();
 		
 		lstArcs.setCellFactory(new Callback<ListView<ArcNode>, ListCell<ArcNode>>(){
 			public ListCell<ArcNode> call(ListView<ArcNode> param) {
 				ListCell<ArcNode> cells = new ListCell<ArcNode>(){
 					protected void updateItem(ArcNode item, boolean empty){
 						super.updateItem(item, empty);
-						if(item != null)
+						setTextFill(Color.BLACK);
+						
+						if(item != null){
 							setText(item.toString());
-						else
+							
+							if(selectedNodes != null){
+								selectedNodes.forEach(n -> {
+									if(n instanceof ArcNode){
+										if(((ArcNode)n).getIdArc() == item.getIdArc()){
+											setTextFill(ARC_COL);
+										}
+									}
+								});
+							}
+						}else{
 							setText(null);
+						}
 					}
 				};
 				
@@ -138,7 +148,6 @@ public class FormController {
 	}
 	
 	private void load(){
-		Map<String, VertexNode> nodes = new HashMap<>();
 		Vertex[] vertexs = gestor.getVertexs();
 		
 		for(Vertex v : vertexs){
@@ -150,27 +159,21 @@ public class FormController {
 			}
 		}
 		
-		List<String> arcs = new ArrayList<>();
-		double distance;
-		int i = 0;
+		List<String> arcs = gestor.getArcs();
 		
-		while(i < arcs.size() - 2){
-			if(i == 0)
-				distance = Double.parseDouble(arcs.get(0));
+		for(String a : arcs){
+			String[] split = a.split(",");
 			
-			VertexNode origin = nodes.get(arcs.get(++i));
-			VertexNode end = nodes.get(++i);
+			VertexNode origin = nodes.get(split[0]);
+			VertexNode end = nodes.get(split[1]);
 			
-			ArcNode arc = new ArcNode();
-			arc.setOriginNode(origin);
-			arc.setEndNode(end);
-			arc.getTextNode().setText("0.0?");
-			
-			origin.getArcs().add(arc);
-			
-			if(!end.equals(origin))
-				end.getArcs().add(arc);	
+			Arc arc = new Arc(Integer.parseInt(split[3]), Double.parseDouble(split[2]));
+			ArcNode arcNode = makeArc(arc, origin, end);
+			pGroup.getChildren().add(arcNode);
 		}
+		
+		for(VertexNode n:nodes.values())
+			n.toFront();
 	}
 	
 	@FXML
@@ -182,6 +185,19 @@ public class FormController {
 		dialog.show();
 	}
 	
+	private void checkSelectedNodes(){
+		if(selectedNodes != null){
+			selectedNodes.forEach(n ->{
+				if(n instanceof VertexNode)
+					((VertexNode)n).getCircleNode().setFill(VERTEX_COL);
+				else if(n instanceof ArcNode)
+						((ArcNode)n).getLineNode().setStroke(ARC_COL);
+			});
+		}
+		
+		selectedNodes = new ArrayList<>();
+	}
+	
 	// -------------------
 	
 	@FXML
@@ -189,7 +205,7 @@ public class FormController {
 		if(!(e instanceof MouseEvent) && (e instanceof KeyEvent && ((KeyEvent)e).getCode() != KeyCode.ENTER))
 			e.consume();
 		else{
-			String vertexVal = txtVertexVal.getText();
+			String vertexVal = txtVertexVal.getText().toUpperCase();
 			
 			if(vertexVal.length() > 0 && !vertexVal.contains(" ")){
 				double limit = RADIUS * 2 + (vertexVal.length() >= 3? 8 : (vertexVal.length() == 2? 4 : 0));
@@ -226,18 +242,14 @@ public class FormController {
 	
 	@FXML
 	private void addArc(){
-		String distance = txtArcDistance.getText();
-		
-		if(originVertex != null && endVertex != null && (distance != null && distance.length() > 0 && !distance.contains(" "))){
+		if(originVertex != null && endVertex != null){
 			Text origin = (Text)originVertex.getChildren().get(1);
 			Text end = (Text)endVertex.getChildren().get(1);
-			int arcId = gestor.insertArc(origin.getText(), end.getText(), Integer.parseInt(distance));
+			int arcId = gestor.insertArc(origin.getText(), end.getText(), 0);
 			
-			Arc arc = new Arc(arcId, Double.parseDouble(distance));
+			Arc arc = new Arc(arcId, 0);
 			Pane stack = makeArc(arc, originVertex, endVertex);
 			pGroup.getChildren().add(stack);
-			
-			txtArcDistance.setText("");
 			
 			lblOrigin.setText("Origin vertex: [ ]");
 			lblEnd.setText("End vertex: [ ]");
@@ -327,10 +339,27 @@ public class FormController {
 		});
 		
 		stack.setOnMouseReleased(new EventHandler<MouseEvent>(){
+			private boolean updating = false;
+			
 			public void handle(MouseEvent e){
 				if(!stack.equals(originVertex) && !stack.equals(endVertex) && !stack.equals(selectedVertex)){
 					circle.setFill(VERTEX_COL);
-					gestor.updateVertex(stack.getTextNode().getText(), stack.translateXProperty().intValue(), stack.translateYProperty().intValue());
+					
+					if(!updating){
+						updating = true;
+						
+						new Thread("updating"){
+							public void run(){
+								gestor.updateVertex(stack.getTextNode().getText(), stack.translateXProperty().intValue(), stack.translateYProperty().intValue());
+								
+								for(ArcNode a : stack.getArcs()){
+									gestor.updateArc(a.getIdArc(), Integer.parseInt(a.getTextNode().getText()));
+								}
+								
+								updating = false;
+							}
+						}.start();
+					}
 				}
 			}
 		});
@@ -421,15 +450,18 @@ public class FormController {
 		
 		stack.setOriginNode(origin);
 		stack.setEndNode(end);
-		
+
 		Circle originCircle = (Circle)origin.getChildren().get(0);
 		Circle endCircle = (Circle)end.getChildren().get(0);
 		
 		Line line = (Line)stack.getChildren().get(0);
 		Text text = (Text)stack.getChildren().get(1);
 		
-		stack.toBack();
+		line.toBack();
 		stack.setMouseTransparent(true);
+		stack.toBack();
+		origin.toFront();
+		end.toFront();
 		
 		originCircle.setFill(VERTEX_COL);
 		endCircle.setFill(VERTEX_COL);
@@ -488,14 +520,17 @@ public class FormController {
 		return angle;
 	}
 	
-	private void relocateText(Text text, StackPane rootNode, double hipotenusa, double angle){
+	private void relocateText(Text text, VertexNode rootNode, double hipotenusa, double angle){
 		text.setX(rootNode.translateXProperty().doubleValue() + (-(hipotenusa / 2) * Math.cos(angle)));
 		text.setY(rootNode.translateYProperty().doubleValue() + (-(hipotenusa / 2) * Math.sin(angle)));
+		text.setText(String.valueOf((int)hipotenusa));
 	}
 
 	// ---------------------
 	
 	private void showVertexInfo(VertexNode node){
+		checkSelectedNodes();
+		
 		if(selectedArc != null)
 			selectedArc.getLineNode().setStroke(ARC_COL);
 		
@@ -512,6 +547,8 @@ public class FormController {
 	}
 	
 	private void showArcInfo(ArcNode node){
+		checkSelectedNodes();
+		
 		if(selectedVertex != null)
 			selectedVertex.getCircleNode().setFill(VERTEX_COL);
 		
@@ -531,6 +568,7 @@ public class FormController {
 	
 	@FXML
 	private void hideInfoPanel(){
+		checkSelectedNodes();
 		pnlInfo.setVisible(false);
 
 		if(selectedVertex != null)
@@ -652,16 +690,73 @@ public class FormController {
 	
 	@FXML
 	private void search(){
+		String vertexVal = txtVertexVal.getText();
 		
+		if(vertexVal != null && vertexVal.length() > 0){
+			VertexNode node = nodes.get(vertexVal.toUpperCase());
+			
+			if(node != null){
+				showVertexInfo(node);
+				
+				node.getCircleNode().setFill(SELECTED_VERTEX_COL);
+				selectedNodes.add(node);
+				
+				node.getArcs().forEach(a -> {
+					if(a.getOriginNode().getTextNode().getText().equals(node.getTextNode().getText())){
+						a.getLineNode().setStroke(SELECTED_ARC_COL);
+						a.getEndNode().getCircleNode().setFill(SELECTED_VERTEX_COL);
+						
+						selectedNodes.add(a);
+						selectedNodes.add(a.getEndNode());
+					}
+				});
+			}
+		}
 	}
 	
 	@FXML
 	private void calcMin(){
-		
+		if(originVertex != null && endVertex != null){
+			List<String> vertex = gestor.calcMin(originVertex.getTextNode().getText(), endVertex.getTextNode().getText());
+			checkSelectedNodes();
+			
+			for(String v:vertex){
+				String[] split = v.split(",");
+				
+				VertexNode node = nodes.get(split[0]);
+				node.getCircleNode().setFill(SELECTED_VERTEX_COL);
+				selectedNodes.add(node);
+				
+				node.getArcs().forEach(a -> {
+					if(a.getTextNode().getText().equals(split[1])){
+						a.getLineNode().setStroke(SELECTED_ARC_COL);
+						selectedNodes.add(a);
+					}
+				});
+			}
+		}
 	}
 	
 	@FXML
 	private void calcMax(){
-		
+		if(originVertex != null && endVertex != null){
+			List<String> vertex = gestor.calcMax(originVertex.getTextNode().getText(), endVertex.getTextNode().getText());
+			checkSelectedNodes();
+			
+			for(String v:vertex){
+				String[] split = v.split(",");
+				
+				VertexNode node = nodes.get(split[0]);
+				node.getCircleNode().setFill(SELECTED_VERTEX_COL);
+				selectedNodes.add(node);
+				
+				node.getArcs().forEach(a -> {
+					if(a.getTextNode().getText().equals(split[1])){
+						a.getLineNode().setStroke(SELECTED_ARC_COL);
+						selectedNodes.add(a);
+					}
+				});
+			}
+		}
 	}
 }
