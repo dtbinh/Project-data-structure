@@ -2,6 +2,7 @@ package logic;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 import db.Conector;
 import db.Querys;
@@ -147,8 +148,20 @@ public class Management {
 		return graph.getVertexs();
 	}
 	
-	public Arc[][] getArcs(){
+	public List<String> getArcs(){
 		return graph.getArcs();
+	}
+	
+	public List<Arc> search(String vertex){
+		return graph.searchArcs(vertex);
+	}
+	
+	public List<String> calcMin(String origin, String end){
+		return graph.recursive(origin, end);
+	}
+	
+	public List<String> calcMax(String origin, String end){
+		return graph.recursive(origin, end);
 	}
 	
 	private ResultSet executeQuery(Querys query, String... params) throws SQLException, Exception{
