@@ -178,113 +178,12 @@ public class Graph {
 		}
 		
 		for (int i = 0; i < getMaxVertex(); i++) {
-				System.out.println("la distancia a " + i + " es " + distances[i]);
+				System.out.println("La distancia del vertice en el indice " + i + " es " + distances[i]);
 		} 
 		
 		return distances;
 	}
-	/*
-	public double[] shortestPath(String origin) {
-		int[] lastVisited = new int[MAX_VERTEX];
-		int indexOrigin = searchIndex(origin);
-		double valueCompare;
-		distances = new double[MAX_VERTEX];
-		vertexVisited = new boolean[MAX_VERTEX];		
-		
-		for (int i = 0; i < MAX_VERTEX; i++) {
-			vertexVisited[i] = false;
-			
-			if (arc[indexOrigin][i] == null)
-				distances[i] = 9999;
-			else
-				distances[i] = arc[indexOrigin][i].getDistance();
-			
-			lastVisited[i] = indexOrigin;
-		}
-		
-		distances[indexOrigin] = 0;
-		vertexVisited[indexOrigin] = true;
-		
-		for (int i = 0; i < MAX_VERTEX; i++) {
-			int indexMinDistance = calcMinimun();		
-			vertexVisited[indexMinDistance] = true;
-			
-			for (int j = 0; j < MAX_VERTEX; j++) {
-				valueCompare = arc[indexMinDistance][j] == null ? 9999 : arc[indexMinDistance][j].getDistance();
-				
-				if (!vertexVisited[j] && valueCompare > 0 && distances[indexMinDistance] != 9999 && 
-							distances[indexMinDistance] + valueCompare < distances[j]) {
-					distances[j] = distances[indexMinDistance] + valueCompare; 
-					
-					valueCompare = distances[indexMinDistance] + (arc[indexMinDistance][j] == null ? 9999 : arc[indexMinDistance][j].getDistance());
-					
-					if (valueCompare < distances[j]) {
-						distances[j] = valueCompare;
-						lastVisited[j] = indexMinDistance;
-					} 
-				}
-			}
-		}
-		
-		return distances;
-	}
-	*//*
-	private int calcMinimun() { 
-		double min = 0;
-		int indexMaxDistance = 1;
-		
-		for (int i = 0; i < MAX_VERTEX; i++) {
-			if (!vertexVisited[i] && distances[i] <= min) {
-				min = distances[i];
-				indexMaxDistance = i;
-			}
-		}
-		return indexMaxDistance ;
-	} */
-	
-	/*
-	public double shortestPath(String origin, String destination) {
-		int[] lastVisited = new int[MAX_VERTEX];
-		int indexOrigin = searchIndex(origin);
-		int indexDestination = searchIndex(destination);
-		double valueCompare;
-		distances = new double[MAX_VERTEX];
-		vertexVisited = new boolean[MAX_VERTEX];		
-		
-		for (int i = 0; i < MAX_VERTEX; i++) {
-			vertexVisited[i] = false;
-			
-			if (arc[indexOrigin][i] == null)
-				distances[i] = 9999;
-			else
-				distances[i] = arc[indexOrigin][i].getDistance();
-			
-			lastVisited[i] = indexOrigin;
-		}
-		
-		distances[indexOrigin] = 0;
-		vertexVisited[indexOrigin] = true;
-		
-		for (int i = 0; i < MAX_VERTEX; i++) {
-			int indexMinDistance = calcMinimun();		
-			vertexVisited[indexMinDistance] = true;
-			
-			if (!vertexVisited[indexDestination]) {
-				if (arc[indexMinDistance][indexDestination] == null)
-					valueCompare = 9999;
-				else 
-					valueCompare = distances[indexMinDistance] + arc[indexMinDistance][indexDestination].getDistance();
-				
-				if (valueCompare < distances[indexDestination]) {
-					distances[indexDestination] = valueCompare;
-					lastVisited[indexDestination] = indexMinDistance;
-				}
-			}
-		}
-		
-		return distances[indexDestination];
-	}
-	*/
+
 	private int searchPathMinimun() {
 		double max = 9999;
 		int indexMinDistance = 1;
@@ -300,120 +199,6 @@ public class Graph {
 	
 	private double calcMinimun(double distance1, double distance2) {
 		return distance1 <= distance2 ? distance1 : distance2;
-	}
-	
-	/*
-	public double[] largestPath(String origin) {
-		int[] lastVisited = new int[MAX_VERTEX];
-		int indexOrigin = searchIndex(origin);
-		double valueCompare;
-		distances = new double[MAX_VERTEX];
-		vertexVisited = new boolean[MAX_VERTEX];		
-		
-		for (int i = 0; i < MAX_VERTEX; i++) {
-			vertexVisited[i] = false;
-			
-			if (arc[indexOrigin][i] == null)
-				distances[i] = -1;
-			else
-				distances[i] = arc[indexOrigin][i].getDistance();
-			
-			lastVisited[i] = indexOrigin;
-		}
-		
-		distances[indexOrigin] = 0;
-		vertexVisited[indexOrigin] = true;
-		
-		for (int i = 0; i < MAX_VERTEX; i++) {
-			int indexMaxDistance = calcMaximun();		
-			vertexVisited[indexMaxDistance] = true;
-			
-			for (int j = 0; j < MAX_VERTEX; j++) {
-				if (!vertexVisited[j]) {
-					if (arc[indexMaxDistance][j] == null)
-						valueCompare = 0;
-					else 
-						valueCompare = distances[indexMaxDistance] + arc[indexMaxDistance][j].getDistance();
-					
-					if (valueCompare > distances[j]) {
-						distances[j] = valueCompare;
-						lastVisited[j] = indexMaxDistance;
-					}
-				}
-			}
-		}
-		
-		return distances;
-	}
-	
-	public double largestPath(String origin, String destination) {
-		int[] lastVisited = new int[MAX_VERTEX];
-		int indexOrigin = searchIndex(origin);
-		int indexDestination = searchIndex(destination);
-		double valueCompare;
-		distances = new double[MAX_VERTEX];
-		vertexVisited = new boolean[MAX_VERTEX];		
-		
-		for (int i = 0; i < MAX_VERTEX; i++) {
-			vertexVisited[i] = false;
-			
-			if (arc[indexOrigin][i] == null)
-				distances[i] = -1;
-			else
-				distances[i] = arc[indexOrigin][i].getDistance();
-			
-			lastVisited[i] = indexOrigin;
-		}
-		
-		distances[indexOrigin] = 0;
-		vertexVisited[indexOrigin] = true;
-		
-		for (int i = 0; i < MAX_VERTEX; i++) {
-			int indexMaxDistance = calcMaximun();		
-			vertexVisited[indexMaxDistance] = true;
-			
-			if (!vertexVisited[indexDestination]) {
-				if (arc[indexMaxDistance][indexDestination] == null)
-					valueCompare = 0;
-				else 
-					valueCompare = distances[indexMaxDistance] + arc[indexMaxDistance][indexDestination].getDistance();
-				
-				if (valueCompare > distances[indexDestination]) {
-					distances[indexDestination] = valueCompare;
-					lastVisited[indexDestination] = indexMaxDistance;
-				}
-			}
-		}
-		
-		return distances[indexDestination];
-	}
-	
-	private int calcMaximun() { 
-		double min = 0;
-		int indexMaxDistance = 1;
-		
-		for (int i = 0; i < MAX_VERTEX; i++) {
-			if (!vertexVisited[i] && (distances[i] >= min)) {
-				min = distances[i];
-				indexMaxDistance = i;
-			}
-		}
-		return indexMaxDistance ;
-	}
-	*/
-	/**
-	 * Linear path for test
-	 */
-	public void print() {
-		for (int i = 0; i < MAX_VERTEX; i++) {
-			for (int j = 0; j < MAX_VERTEX; j++) {
-				if (arc[i][j] != null) {
-					System.out.println("Origen: " + vertex[i].getName());
-					System.out.println("Distancia: " + arc[i][j].getDistance());
-					System.out.println("Destino: " + vertex[j].getName() + "\n");
-				}
-			}
-		}
 	}
 	
 	public void fillHash() {
@@ -447,94 +232,89 @@ public class Graph {
 		return arc;
 	}
 
-	public List<String> recursive(String origen, String destino){
-		List<List<String>> caminos = new ArrayList<>();
-		List<String> camino = new ArrayList<String>();
+	public List<String> shortestPath(String origen, String destino){
+		List<String> minimumPath = new ArrayList<>();
+		List<String> path = new ArrayList<String>();
 		
-		recursive(searchIndex(origen), searchIndex(destino), camino, caminos, 0, new ArrayList<Integer>());
+		recursive(searchIndex(origen), searchIndex(destino), path, minimumPath, 0);
 		
-		for(List<String> list:caminos){
-			for(String v:list){
-				System.out.println(v);
-			}
-			
-			System.out.println("-------------");
-		}
-		
-		return new ArrayList<String>();
+		return minimumPath;
 	}
 	
-	private void recursive(int indexOrigen, int indexDestino, List<String> camino, List<List<String>> caminos, int nextArc, List<Integer> exclude){
-		if(indexOrigen >= 0 && indexOrigen < MAX_VERTEX && !exclude.contains(indexOrigen) && nextArc < MAX_VERTEX){
+	private void recursive(int indexOrigen, int indexDestino, List<String> path, List<String> minimumPath, int nextArc) {
+		if(indexOrigen >= 0 && indexOrigen < MAX_VERTEX && nextArc < MAX_VERTEX){
 			Vertex vertex = this.vertex[indexOrigen];
 			Arc arc = this.arc[indexOrigen][nextArc];
+			String[] temp;
+			double sum1 = 0;
+			double sum2 = 0;
 			
 			if(vertex != null){
 				if(indexOrigen == indexDestino){
-					List<String> temp = new ArrayList<String>();
-					
-					for(String v : camino)
-						temp.add(v);
-					
-					temp.add(vertex.getName() + ",0.0");
-					caminos.add(temp);
-					
-					recursive(--indexOrigen, indexDestino, camino, caminos, ++nextArc, exclude);	
+					if (minimumPath.size() == 0) {
+						sum1 = 0; sum2 = 0;
+						
+						for(String v : path) {
+							minimumPath.add(v);
+							temp = v.split(",");
+							sum1 =+ Double.parseDouble(temp[1]);
+						}
+						
+						minimumPath.add(vertex.getName() + ",0.0"); 
+					} else  {
+						for(String v : path) {
+							temp = v.split(",");
+							sum2 =+ Double.parseDouble(temp[1]);
+						}
+						
+						if (sum1 > sum2) {
+							for(String v : path)
+								minimumPath.add(v);
+							
+							minimumPath.add(vertex.getName() + ",0.0"); 
+						}
+					}
+
+					recursive(--indexOrigen, indexDestino, path, minimumPath, ++nextArc);	
 					return ;
-				}else if(arc != null){
-					if(!camino.contains(vertex.getName() + "," + arc.getDistance())){
-						camino.add(vertex.getName() + "," + arc.getDistance());
-						recursive(nextArc, indexDestino, camino, caminos, 0, exclude);
-					}else
-						recursive(indexOrigen, indexDestino, camino, caminos, ++nextArc, exclude);
 					
+				} else if(arc != null){
+					if(!path.contains(vertex.getName() + "," + arc.getDistance())){
+						path.add(vertex.getName() + "," + arc.getDistance());
+						recursive(nextArc, indexDestino, path, minimumPath, 0);
+						
+					} else {					
+						for (int i = nextArc + 1; i < MAX_VERTEX; i++) {
+							if (this.arc[indexOrigen][i] != null) {
+								if (!path.contains(vertex.getName() + "," + this.arc[indexOrigen][i].getDistance()))
+									path.remove(vertex.getName() + "," + this.arc[indexOrigen][nextArc].getDistance());
+							}
+						}
+								
+						recursive(indexOrigen, indexDestino, path, minimumPath, ++nextArc);
+					}
 					return ;
-				}else if(nextArc == MAX_VERTEX - 1){
-					camino.remove(camino.size() - 1);
 				}
 				
-				recursive(indexOrigen, indexDestino, camino, caminos, ++nextArc, exclude);
+				recursive(indexOrigen, indexDestino, path, minimumPath, ++nextArc);
 				return ;
 			}
 		}
 		
 		if(indexOrigen < MAX_VERTEX)
-			recursive(++indexOrigen, indexDestino, camino, caminos, 0, exclude);
+			recursive(++indexOrigen, indexDestino, path, minimumPath, 0);
 	}
 	
-	/*public void recursive(String origen, String destino){
-		double min = recursive(searchIndex(origen), searchIndex(destino), new Double[MAX_VERTEX][MAX_VERTEX + 1], new String[MAX_VERTEX]);
-		
-	}
-	
-	private double recursive(int indexOrigen, int indexDestino, Double[][] distances, String[] vertex){
-		double min = Double.MAX_VALUE;
-		
-		if(indexOrigen >= 0){
-			Arc[] vertexArcs = this.arc[indexOrigen];
-			int index = -1;
-			
-			for(int i=0;i<vertexArcs.length;i++){
-				if(vertexArcs[i] != null && distances[indexOrigen][i] == null){
-					if(vertexArcs[i].getDistance() < min){
-						min = vertexArcs[i].getDistance();
-						distances[indexOrigen][i] = min;
-						distances[i][indexOrigen] = min;
-						index = i;
-					}
+    // Linear path for test
+	public void print() {
+		for (int i = 0; i < MAX_VERTEX; i++) {
+			for (int j = 0; j < MAX_VERTEX; j++) {
+				if (arc[i][j] != null) {
+					System.out.println("Origen: " + vertex[i].getName());
+					System.out.println("Distancia: " + arc[i][j].getDistance());
+					System.out.println("Destino: " + vertex[j].getName() + "\n");
 				}
 			}
-			
-			if(index >= 0){
-				distances[indexOrigen][MAX_VERTEX] = min;
-				min = recursive(index, indexDestino, distances, vertex);
-			}
-			
 		}
-		
-		return min;
-	}*/
-	
-	
-	
+	}
 }
