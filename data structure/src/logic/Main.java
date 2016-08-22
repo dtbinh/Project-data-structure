@@ -35,7 +35,14 @@ public class Main {
 		
 		graph.insertArc(0, "G", "D", 5);
 		
-		List<String> result = graph.shortestPath("A", "D");
+		List<String> result = graph.searchPath("A", "D", true);
+		
+		for(String v: result)
+			System.out.println(v);
+		
+		System.out.println("------");	
+		
+		result = graph.searchPath("A", "D", false);
 		
 		for(String v: result)
 			System.out.println(v);

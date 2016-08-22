@@ -157,11 +157,11 @@ public class Management {
 	}
 	
 	public List<String> calcMin(String origin, String end){
-		return graph.recursive(origin, end);
+		return graph.searchPath(origin, end, true);
 	}
 	
 	public List<String> calcMax(String origin, String end){
-		return graph.recursive(origin, end);
+		return graph.searchPath(origin, end, true);
 	}
 	
 	private ResultSet executeQuery(Querys query, String... params) throws SQLException, Exception{

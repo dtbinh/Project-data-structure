@@ -247,16 +247,16 @@ public class Graph {
 		return arcs;
 	}
 
-	public List<String> shortestPath(String origen, String destino){
+	public List<String> searchPath(String origen, String destino, boolean searchMinimunPath){
 		List<String> minimumPath = new ArrayList<>();
 		List<String> path = new ArrayList<String>();
 		
-		recursive(searchIndex(origen), searchIndex(destino), path, minimumPath, 0);
+		searchPath(searchIndex(origen), searchIndex(destino), path, minimumPath, 0, searchMinimunPath);
 		
 		return minimumPath;
 	}
 	
-	private void recursive(int indexOrigen, int indexDestino, List<String> path, List<String> minimumPath, int nextArc) {
+	private void searchPath(int indexOrigen, int indexDestino, List<String> path, List<String> minimumPath, int nextArc, boolean searchMinimunPath) {
 		if(indexOrigen >= 0 && indexOrigen < MAX_VERTEX && nextArc < MAX_VERTEX){
 			Vertex vertex = this.vertex[indexOrigen];
 			Arc arc = this.arc[indexOrigen][nextArc];
@@ -282,7 +282,9 @@ public class Graph {
 							sum2 =+ Double.parseDouble(temp[1]);
 						}
 						
-						if (sum1 > sum2) {
+						if ((searchMinimunPath && sum1 > sum2) || (!searchMinimunPath && sum1 < sum2)) {
+							minimumPath.clear();
+							
 							for(String v : path)
 								minimumPath.add(v);
 							
@@ -290,13 +292,13 @@ public class Graph {
 						}
 					}
 
-					recursive(--indexOrigen, indexDestino, path, minimumPath, ++nextArc);	
+					searchPath(--indexOrigen, indexDestino, path, minimumPath, ++nextArc, searchMinimunPath);	
 					return ;
 					
 				} else if(arc != null){
 					if(!path.contains(vertex.getName() + "," + arc.getDistance())){
 						path.add(vertex.getName() + "," + arc.getDistance());
-						recursive(nextArc, indexDestino, path, minimumPath, 0);
+						searchPath(nextArc, indexDestino, path, minimumPath, 0, searchMinimunPath);
 						
 					} else {					
 						for (int i = nextArc + 1; i < MAX_VERTEX; i++) {
@@ -306,18 +308,18 @@ public class Graph {
 							}
 						}
 								
-						recursive(indexOrigen, indexDestino, path, minimumPath, ++nextArc);
+						searchPath(indexOrigen, indexDestino, path, minimumPath, ++nextArc, searchMinimunPath);
 					}
 					return ;
 				}
 				
-				recursive(indexOrigen, indexDestino, path, minimumPath, ++nextArc);
+				searchPath(indexOrigen, indexDestino, path, minimumPath, ++nextArc, searchMinimunPath);
 				return ;
 			}
 		}
 		
 		if(indexOrigen < MAX_VERTEX)
-			recursive(++indexOrigen, indexDestino, path, minimumPath, 0);
+			searchPath(++indexOrigen, indexDestino, path, minimumPath, 0, searchMinimunPath);
 	}
 	
     // Linear path for test
