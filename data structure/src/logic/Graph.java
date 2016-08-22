@@ -1,6 +1,7 @@
 package logic;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Graph {
 	static final int MAX_VERTEX = 9;
@@ -445,4 +446,95 @@ public class Graph {
 	public Arc[][] getArcs(){
 		return arc;
 	}
+
+	public List<String> recursive(String origen, String destino){
+		List<List<String>> caminos = new ArrayList<>();
+		List<String> camino = new ArrayList<String>();
+		
+		recursive(searchIndex(origen), searchIndex(destino), camino, caminos, 0, new ArrayList<Integer>());
+		
+		for(List<String> list:caminos){
+			for(String v:list){
+				System.out.println(v);
+			}
+			
+			System.out.println("-------------");
+		}
+		
+		return new ArrayList<String>();
+	}
+	
+	private void recursive(int indexOrigen, int indexDestino, List<String> camino, List<List<String>> caminos, int nextArc, List<Integer> exclude){
+		if(indexOrigen >= 0 && indexOrigen < MAX_VERTEX && !exclude.contains(indexOrigen) && nextArc < MAX_VERTEX){
+			Vertex vertex = this.vertex[indexOrigen];
+			Arc arc = this.arc[indexOrigen][nextArc];
+			
+			if(vertex != null){
+				if(indexOrigen == indexDestino){
+					List<String> temp = new ArrayList<String>();
+					
+					for(String v : camino)
+						temp.add(v);
+					
+					temp.add(vertex.getName() + ",0.0");
+					caminos.add(temp);
+					
+					recursive(--indexOrigen, indexDestino, camino, caminos, ++nextArc, exclude);	
+					return ;
+				}else if(arc != null){
+					if(!camino.contains(vertex.getName() + "," + arc.getDistance())){
+						camino.add(vertex.getName() + "," + arc.getDistance());
+						recursive(nextArc, indexDestino, camino, caminos, 0, exclude);
+					}else
+						recursive(indexOrigen, indexDestino, camino, caminos, ++nextArc, exclude);
+					
+					return ;
+				}else if(nextArc == MAX_VERTEX - 1){
+					camino.remove(camino.size() - 1);
+				}
+				
+				recursive(indexOrigen, indexDestino, camino, caminos, ++nextArc, exclude);
+				return ;
+			}
+		}
+		
+		if(indexOrigen < MAX_VERTEX)
+			recursive(++indexOrigen, indexDestino, camino, caminos, 0, exclude);
+	}
+	
+	/*public void recursive(String origen, String destino){
+		double min = recursive(searchIndex(origen), searchIndex(destino), new Double[MAX_VERTEX][MAX_VERTEX + 1], new String[MAX_VERTEX]);
+		
+	}
+	
+	private double recursive(int indexOrigen, int indexDestino, Double[][] distances, String[] vertex){
+		double min = Double.MAX_VALUE;
+		
+		if(indexOrigen >= 0){
+			Arc[] vertexArcs = this.arc[indexOrigen];
+			int index = -1;
+			
+			for(int i=0;i<vertexArcs.length;i++){
+				if(vertexArcs[i] != null && distances[indexOrigen][i] == null){
+					if(vertexArcs[i].getDistance() < min){
+						min = vertexArcs[i].getDistance();
+						distances[indexOrigen][i] = min;
+						distances[i][indexOrigen] = min;
+						index = i;
+					}
+				}
+			}
+			
+			if(index >= 0){
+				distances[indexOrigen][MAX_VERTEX] = min;
+				min = recursive(index, indexDestino, distances, vertex);
+			}
+			
+		}
+		
+		return min;
+	}*/
+	
+	
+	
 }
