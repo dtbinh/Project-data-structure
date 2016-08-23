@@ -2,7 +2,9 @@ package logic;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.List;
-
+/**
+ * CLASE PARA PRUEBAS
+ */
 public class Main {
 	private static BufferedReader br;
 	private static Graph graph;

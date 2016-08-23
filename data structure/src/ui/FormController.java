@@ -24,8 +24,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
@@ -523,7 +521,7 @@ public class FormController {
 	private void relocateText(Text text, VertexNode rootNode, double hipotenusa, double angle){
 		text.setX(rootNode.translateXProperty().doubleValue() + (-(hipotenusa / 2) * Math.cos(angle)));
 		text.setY(rootNode.translateYProperty().doubleValue() + (-(hipotenusa / 2) * Math.sin(angle)));
-		text.setText(String.valueOf((int)hipotenusa));
+		text.setText(String.valueOf((int)(hipotenusa * 10d)));
 	}
 
 	// ---------------------
